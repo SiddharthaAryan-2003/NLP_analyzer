@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NLP Text Analyzer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #4f46e5 50%, #7c3aed 100%);
+      padding: 1.25rem 2rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: .75rem;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; }
+    header .sub { font-size: .8rem; opacity: .75; margin-top: .2rem; }
+    #device-badge {
+      display: flex; align-items: center; gap: .5rem;
+      background: rgba(0,0,0,.3); border-radius: 999px;
+      padding: .35rem .9rem; font-size: .78rem;
+    }
+    #device-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── Layout ─────────────────────────────────────────────── */
+    main { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+
+    /* ── Card ────────────────────────────────────────────────── */
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card-title { font-size: .75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; }
+
+    /* ── Textarea ─────────────────────────────────────────────── */
+    textarea {
+      width: 100%; min-height: 110px; resize: vertical;
+      background: #0f172a; border: 1px solid #475569; color: #e2e8f0;
+      border-radius: 8px; padding: .75rem 1rem; font-size: .95rem;
+      font-family: inherit; outline: none; transition: border-color .2s;
+    }
+    textarea:focus { border-color: #6366f1; }
+    .char-count { font-size: .75rem; color: #64748b; text-align: right; margin-top: .3rem; }
+
+    /* ── Tabs ─────────────────────────────────────────────────── */
+    .tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
+    .tab-btn {
+      padding: .4rem .9rem; border-radius: 6px; border: 1px solid #334155;
+      background: transparent; color: #94a3b8; cursor: pointer; font-size: .82rem;
+      transition: all .15s; display: flex; align-items: center; gap: .3rem;
+    }
+    .tab-btn:hover { border-color: #6366f1; color: #e2e8f0; }
+    .tab-btn.active { background: #6366f1; border-color: #6366f1; color: #fff; font-weight: 600; }
+    .engine-badge {
+      font-size: .65rem; padding: .1rem .4rem; border-radius: 3px;
+      background: rgba(255,255,255,.15); font-weight: 400;
+    }
+
+    /* ── Controls row ────────────────────────────────────────── */
+    .controls-row { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
+    .control-group { display: flex; flex-direction: column; gap: .3rem; }
+    .control-group label { font-size: .78rem; color: #94a3b8; }
+    .control-group select, .control-group input[type=range] {
+      background: #0f172a; border: 1px solid #475569; color: #e2e8f0;
+      border-radius: 6px; padding: .35rem .6rem; font-size: .85rem;
+    }
+    .alpha-display { font-size: .8rem; color: #818cf8; font-weight: 600; min-width: 30px; }
+
+    /* ── Run button ─────────────────────────────────────────── */
+    #run-btn {
+      padding: .7rem 2.5rem; border-radius: 8px;
+      background: linear-gradient(135deg, #6366f1, #7c3aed);
+      border: none; color: #fff; font-size: .95rem; font-weight: 600;
+      cursor: pointer; transition: opacity .2s; white-space: nowrap;
+    }
+    #run-btn:hover { opacity: .9; }
+    #run-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Loader ────────────────────────────────────────────── */
+    #loader { display: none; text-align: center; padding: 2rem; color: #94a3b8; }
+    .spinner {
+      display: inline-block; width: 24px; height: 24px;
+      border: 3px solid #334155; border-top-color: #6366f1;
+      border-radius: 50%; animation: spin .7s linear infinite;
+      vertical-align: middle; margin-right: .5rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error ─────────────────────────────────────────────── */
+    #error-box { display: none; background: #450a0a; border: 1px solid #dc2626; border-radius: 8px; padding: 1rem; color: #fca5a5; margin-top: 1rem; }
+
+    /* ── Results ───────────────────────────────────────────── */
+    #results { display: none; }
+
+    /* Stats grid */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .65rem; }
+    .stat { background: #0f172a; border-radius: 8px; padding: 1rem; text-align: center; border: 1px solid #334155; }
+    .stat .val { font-size: 1.7rem; font-weight: 700; color: #818cf8; }
+    .stat .lbl { font-size: .7rem; color: #64748b; margin-top: .2rem; }
+
+    /* Chips */
+    .chip-wrap { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .chip { padding: .22rem .6rem; border-radius: 999px; font-size: .78rem; border: 1px solid; }
+    .chip-token  { background: #1e3a5f55; border-color: #3b82f6; color: #93c5fd; }
+    .chip-ngram  { background: #2d1b6955; border-color: #7c3aed; color: #c4b5fd; }
+    .chip-phrase { background: #064e3b55; border-color: #059669; color: #6ee7b7; }
+    .chip-topic  { background: #78350f55; border-color: #d97706; color: #fcd34d; }
+    .chip-err    { background: #450a0a55; border-color: #dc2626; color: #fca5a5; }
+    .chip-fix    { background: #052e1655; border-color: #16a34a; color: #86efac; }
+
+    /* POS table */
+    .tbl-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    th, td { padding: .5rem .7rem; text-align: left; border-bottom: 1px solid #1e293b; }
+    th { color: #64748b; font-weight: 600; background: #0f172a; position: sticky; top: 0; }
+    tr:hover td { background: #1e293b44; }
+    .pos-badge { display: inline-block; padding: .15rem .45rem; border-radius: 4px; font-size: .72rem; font-weight: 700; background: #312e81; color: #c7d2fe; border: 1px solid #4f46e5; }
+
+    /* NER colors */
+    .ner-PERSON    { background:#1e3a5f; border-color:#3b82f6; color:#93c5fd; }
+    .ner-ORG       { background:#2d1b69; border-color:#7c3aed; color:#c4b5fd; }
+    .ner-GPE       { background:#064e3b; border-color:#059669; color:#6ee7b7; }
+    .ner-LOC       { background:#064e3b; border-color:#16a34a; color:#86efac; }
+    .ner-DATE      { background:#78350f; border-color:#d97706; color:#fcd34d; }
+    .ner-TIME      { background:#78350f; border-color:#f59e0b; color:#fde68a; }
+    .ner-MONEY     { background:#052e16; border-color:#16a34a; color:#bbf7d0; }
+    .ner-PRODUCT   { background:#1e1b4b; border-color:#6366f1; color:#e0e7ff; }
+    .ner-NORP      { background:#450a0a; border-color:#dc2626; color:#fca5a5; }
+    .ner-default   { background:#1e293b; border-color:#475569; color:#94a3b8; }
+
+    /* Annotated text */
+    .annotated-text { font-size: .92rem; line-height: 2.2; }
+    .ent-mark {
+      display: inline-block; border-radius: 4px; padding: .05rem .4rem;
+      margin: 0 .1rem; font-weight: 600; position: relative;
+      cursor: default;
+    }
+    .ent-label {
+      font-size: .6rem; font-weight: 700; vertical-align: super;
+      margin-left: .25rem; opacity: .8; text-transform: uppercase;
+    }
+
+    /* N-gram bars */
+    .ngram-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .35rem; }
+    .ngram-label { min-width: 150px; font-size: .8rem; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ngram-bar-wrap { flex: 1; background: #0f172a; border-radius: 4px; height: 10px; border: 1px solid #334155; overflow: hidden; }
+    .ngram-bar { height: 100%; background: linear-gradient(90deg,#6366f1,#a78bfa); border-radius: 3px; transition: width .5s ease; }
+    .ngram-meta { font-size: .72rem; color: #64748b; min-width: 120px; text-align: right; }
+
+    /* Diff / text boxes */
+    .text-box { background: #0f172a; border-radius: 8px; padding: 1rem; font-size: .9rem; line-height: 1.7; border: 1px solid #334155; }
+
+    /* Sentiment badge */
+    .sentiment-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .sentiment-label {
+      padding: .4rem 1.1rem; border-radius: 999px; font-weight: 700; font-size: .9rem;
+    }
+    .s-positive { background: #052e16; border: 1px solid #16a34a; color: #86efac; }
+    .s-negative { background: #450a0a; border: 1px solid #dc2626; color: #fca5a5; }
+    .s-neutral  { background: #1e293b; border: 1px solid #475569; color: #94a3b8; }
+    .s-mixed    { background: #78350f; border: 1px solid #d97706; color: #fcd34d; }
+    .score-bar-wrap { flex: 1; min-width: 120px; height: 8px; background: #334155; border-radius: 4px; overflow: hidden; }
+    .score-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg,#dc2626,#22c55e); }
+
+    /* Dependency SVG */
+    #dep-svg-wrap svg { width: 100% !important; height: auto !important; }
+    #dep-svg-wrap { overflow-x: auto; background: #0f172a; border-radius: 8px; padding: 1rem; border: 1px solid #334155; }
+
+    /* Section title */
+    .sec { font-size: .72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin: 1.25rem 0 .6rem; display: flex; align-items: center; gap: .5rem; }
+    .sec::after { content:''; flex:1; height:1px; background:#334155; }
+    .sec:first-child { margin-top: 0; }
+
+    /* Engine tag */
+    .engine-tag { font-size: .68rem; padding: .1rem .5rem; border-radius: 4px; border: 1px solid #334155; color: #64748b; font-family: monospace; }
+
+    /* Two-col layout for full analysis */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media(max-width:700px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* Complexity / discourse badges */
+    .info-badge { display: inline-block; padding: .3rem .8rem; border-radius: 6px; font-size: .82rem; font-weight: 600; border: 1px solid #4f46e5; background: #1e1b4b; color: #c7d2fe; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🧠 NLP Text Analyzer</h1>
+    <div class="sub">spaCy (GPU) · NLTK · Google Gemini — Hybrid NLP Pipeline</div>
+  </div>
+  <div id="device-badge">
+    <div class="dot"></div>
+    <span id="device-text">Detecting GPU…</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- Input -->
+  <div class="card">
+    <div class="card-title">Input Text</div>
+    <textarea id="text-input" placeholder="Type or paste your text here…&#10;&#10;Example: Barack Obama visited Google's headquarters in Mountain View on January 15th, 2024. He didn't think the company's NLP models were progressing fast enough."></textarea>
+    <div class="char-count"><span id="char-count">0</span> / 3000 characters</div>
+  </div>
+
+  <!-- Task -->
+  <div class="card">
+    <div class="card-title">Analysis Task</div>
+    <div class="tabs">
+      <button class="tab-btn active" data-task="analyze">⚡ Full Analysis</button>
+      <button class="tab-btn" data-task="tokenize">✂️ Tokenize <span class="engine-badge">spaCy</span></button>
+      <button class="tab-btn" data-task="pos">🏷️ POS Tags <span class="engine-badge">spaCy</span></button>
+      <button class="tab-btn" data-task="ner">🔍 NER <span class="engine-badge">spaCy</span></button>
+      <button class="tab-btn" data-task="dependency">🌲 Dependency <span class="engine-badge">spaCy</span></button>
+      <button class="tab-btn" data-task="ngrams">📊 N-Grams <span class="engine-badge">NLTK</span></button>
+      <button class="tab-btn" data-task="spellcheck">🔤 Spell Check <span class="engine-badge">Gemini</span></button>
+      <button class="tab-btn" data-task="normalize">🔧 Normalize <span class="engine-badge">Gemini</span></button>
+    </div>
+
+    <!-- N-gram controls -->
+    <div id="ngram-controls" style="display:none; margin-bottom:1rem;">
+      <div class="controls-row">
+        <div class="control-group">
+          <label for="ngram-n">N value</label>
+          <select id="ngram-n">
+            <option value="1">Unigrams (1)</option>
+            <option value="2" selected>Bigrams (2)</option>
+            <option value="3">Trigrams (3)</option>
+            <option value="4">4-grams</option>
+            <option value="5">5-grams</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Smoothing α — <span class="alpha-display" id="alpha-display">0.5</span> <span style="font-size:.7rem;color:#64748b">(1 = Laplace)</span></label>
+          <input type="range" id="alpha-slider" min="0.01" max="1" step="0.01" value="0.5" style="width:160px">
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <button id="run-btn">▶ Analyze</button>
+    </div>
+  </div>
+
+  <div id="loader"><span class="spinner"></span><span id="loader-text">Processing…</span></div>
+  <div id="error-box"></div>
+  <div id="results" class="card">
+    <div id="results-content"></div>
+  </div>
+
+</main>
+
+<script>
+// ── Device badge ────────────────────────────────────────────────────────────
+fetch("/api/device").then(r => r.json()).then(d => {
+  const el = document.getElementById("device-text");
+  el.textContent = d.cuda_available
+    ? `GPU: ${d.device} · ${d.spacy_model}`
+    : `CPU · ${d.spacy_model}`;
+  if (!d.cuda_available) {
+    document.querySelector("#device-badge .dot").style.background = "#f59e0b";
+  }
+}).catch(() => {
+  document.getElementById("device-text").textContent = "Model loading…";
+});
+
+// ── Char counter ─────────────────────────────────────────────────────────────
+const textInput = document.getElementById("text-input");
+textInput.addEventListener("input", () => {
+  document.getElementById("char-count").textContent = textInput.value.length;
+});
+
+// ── Alpha slider ─────────────────────────────────────────────────────────────
+document.getElementById("alpha-slider").addEventListener("input", e => {
+  document.getElementById("alpha-display").textContent = e.target.value;
+});
+
+// ── Tab switching ────────────────────────────────────────────────────────────
+let currentTask = "analyze";
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentTask = btn.dataset.task;
+    document.getElementById("ngram-controls").style.display =
+      currentTask === "ngrams" ? "block" : "none";
+    hide(["results", "error-box"]);
+  });
+});
+
+// ── Run button ───────────────────────────────────────────────────────────────
+document.getElementById("run-btn").addEventListener("click", async () => {
+  const text = textInput.value.trim();
+  if (!text) { showError("Please enter some text first."); return; }
+
+  setLoading(true, currentTask);
+  hide(["results", "error-box"]);
+
+  const body = { text };
+  if (currentTask === "ngrams") {
+    body.n     = parseInt(document.getElementById("ngram-n").value);
+    body.alpha = parseFloat(document.getElementById("alpha-slider").value);
+  }
+
+  try {
+    const res  = await fetch(`/api/${currentTask}`, {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || "API error");
+    renderResults(currentTask, data);
+  } catch(err) {
+    showError(err.message);
+  } finally {
+    setLoading(false);
+  }
+});
+
+// ── Dispatcher ───────────────────────────────────────────────────────────────
+function renderResults(task, data) {
+  const renderers = {
+    analyze:    renderFullAnalysis,
+    tokenize:   renderTokenize,
+    pos:        renderPOS,
+    ner:        renderNER,
+    dependency: renderDependency,
+    ngrams:     renderNgrams,
+    spellcheck: renderSpellCheck,
+    normalize:  renderNormalize,
+  };
+  document.getElementById("results-content").innerHTML =
+    (renderers[task] || (() => "<p>Unknown task</p>"))(data);
+  show("results");
+}
+
+// ── Renderers ────────────────────────────────────────────────────────────────
+
+function renderTokenize(d) {
+  return `
+    <div class="sec">Statistics <span class="engine-tag">${esc(d.engine)}</span></div>
+    <div class="stat-grid">
+      <div class="stat"><div class="val">${d.word_count}</div><div class="lbl">Words</div></div>
+      <div class="stat"><div class="val">${d.sentence_count}</div><div class="lbl">Sentences</div></div>
+      <div class="stat"><div class="val">${d.unique_words}</div><div class="lbl">Unique Words</div></div>
+      <div class="stat"><div class="val">${(d.lexical_diversity*100).toFixed(1)}%</div><div class="lbl">Lexical Diversity</div></div>
+      <div class="stat"><div class="val">${d.avg_word_length}</div><div class="lbl">Avg Word Len</div></div>
+      <div class="stat"><div class="val">${d.stop_word_count}</div><div class="lbl">Stop Words</div></div>
+    </div>
+    <div class="sec">Sentences</div>
+    ${d.sentences.map((s,i) => `<p style="margin-bottom:.5rem;font-size:.88rem"><strong style="color:#818cf8">${i+1}.</strong> ${esc(s)}</p>`).join("")}
+    <div class="sec">Tokens (${d.tokens.length})</div>
+    <div class="chip-wrap">${d.tokens.map(t => `<span class="chip chip-token">${esc(t)}</span>`).join("")}</div>
+  `;
+}
+
+function renderPOS(d) {
+  const rows = d.tagged.map(t => `
+    <tr>
+      <td>${esc(t.token)}</td>
+      <td><span class="pos-badge">${esc(t.pos)}</span></td>
+      <td>${esc(t.description)}</td>
+      <td style="color:#64748b;font-style:italic">${esc(t.lemma)}</td>
+      <td>${t.is_stop ? '<span style="color:#f59e0b">●</span>' : ''}</td>
+    </tr>`).join("");
+
+  const summRows = d.pos_summary.map(p => `
+    <tr><td><span class="pos-badge">${esc(p.tag)}</span></td><td>${esc(p.description)}</td><td>${p.count}</td></tr>
+  `).join("");
+
+  return `
+    <div class="sec">POS Tags <span class="engine-tag">${esc(d.engine)}</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Token</th><th>Tag</th><th>Description</th><th>Lemma</th><th>Stop?</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div class="sec">Tag Distribution</div>
+    <div class="tbl-wrap">
+      <table><thead><tr><th>Tag</th><th>Description</th><th>Count</th></tr></thead>
+      <tbody>${summRows}</tbody></table>
+    </div>
+  `;
+}
+
+function renderNER(d) {
+  if (!d.entity_count) {
+    return `
+      <div class="sec">Named Entities <span class="engine-tag">${esc(d.engine)}</span></div>
+      <p style="color:#6ee7b7">✅ No named entities detected in this text.</p>
+      <div class="sec">Annotated Text</div>
+      <div class="text-box">${esc(d.annotated?.map(a=>a.text).join("")||"")}</div>
+    `;
+  }
+
+  // Build annotated HTML
+  const annotatedHtml = (d.annotated || []).map(seg => {
+    if (seg.type === "text") return esc(seg.text);
+    const cls = `ner-${seg.label}`;
+    return `<span class="ent-mark chip ${cls}">${esc(seg.text)}<span class="ent-label">${esc(seg.label)}</span></span>`;
+  }).join("");
+
+  const typeRows = d.entity_types.map(et => `
+    <tr><td><span class="chip ner-${et.label} chip">${esc(et.label)}</span></td>
+        <td>${esc(et.description)}</td><td>${et.count}</td></tr>
+  `).join("");
+
+  return `
+    <div class="sec">Annotated Text <span class="engine-tag">${esc(d.engine)}</span></div>
+    <div class="text-box annotated-text">${annotatedHtml}</div>
+    <div class="sec">Entity Types Found</div>
+    <div class="tbl-wrap">
+      <table><thead><tr><th>Label</th><th>Description</th><th>Count</th></tr></thead>
+      <tbody>${typeRows}</tbody></table>
+    </div>
+    <div class="sec">All Entities (${d.entity_count})</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Text</th><th>Label</th><th>Description</th><th>Position</th></tr></thead>
+        <tbody>${d.entities.map(e => `
+          <tr><td><strong>${esc(e.text)}</strong></td>
+              <td><span class="chip ner-${e.label} chip">${esc(e.label)}</span></td>
+              <td>${esc(e.description)}</td>
+              <td style="color:#64748b;font-size:.75rem">${e.start}–${e.end}</td></tr>
+        `).join("")}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderDependency(d) {
+  const rows = d.dependencies.map(dep => `
+    <tr>
+      <td><strong>${esc(dep.token)}</strong></td>
+      <td><span style="color:#818cf8;font-weight:600">${esc(dep.dep)}</span></td>
+      <td>${esc(dep.head)}</td>
+      <td style="color:#64748b;font-size:.75rem">${dep.children.length ? esc(dep.children.join(", ")) : "—"}</td>
+    </tr>`).join("");
+
+  return `
+    <div class="sec">Dependency Tree <span class="engine-tag">${esc(d.engine)}</span></div>
+    <div id="dep-svg-wrap">${d.svg}</div>
+    ${d.note ? `<p style="font-size:.78rem;color:#64748b;margin-top:.5rem">ℹ ${esc(d.note)}</p>` : ""}
+    <div class="sec">Dependency Relations</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Token</th><th>Relation</th><th>Head</th><th>Children</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderNgrams(d) {
+  if (d.error) return `<p style="color:#fca5a5">⚠ ${esc(d.error)}</p>`;
+  const max = d.top_10.length ? d.top_10[0].count : 1;
+  const bars = d.top_10.map(item => {
+    const pct = Math.round((item.count / max) * 100);
+    return `
+      <div class="ngram-row">
+        <span class="ngram-label" title="${esc(item.ngram)}">${esc(item.ngram)}</span>
+        <div class="ngram-bar-wrap"><div class="ngram-bar" style="width:${pct}%"></div></div>
+        <span class="ngram-meta">${item.count}× · p=${item.smoothed_prob}</span>
+      </div>`;
+  }).join("");
+
+  return `
+    <div class="sec">Statistics <span class="engine-tag">NLTK</span></div>
+    <div class="stat-grid">
+      <div class="stat"><div class="val">${d.n}</div><div class="lbl">N value</div></div>
+      <div class="stat"><div class="val">${d.total_ngrams}</div><div class="lbl">Total N-grams</div></div>
+      <div class="stat"><div class="val">${d.unique_ngrams}</div><div class="lbl">Unique N-grams</div></div>
+      <div class="stat"><div class="val">${d.alpha}</div><div class="lbl">Smoothing α</div></div>
+    </div>
+    <p style="font-size:.75rem;color:#64748b;margin:.75rem 0 .25rem">${esc(d.smoothing)}</p>
+    <div class="sec">Top ${d.top_10.length} by Frequency</div>
+    ${bars}
+    <div class="sec">All ${d.n}-grams</div>
+    <div class="chip-wrap">${d.ngrams.map(g => `<span class="chip chip-ngram">${esc(g)}</span>`).join("")}</div>
+  `;
+}
+
+function renderSpellCheck(d) {
+  const qual = {excellent:"#22c55e",good:"#84cc16",fair:"#f59e0b",poor:"#ef4444"}[d.overall_quality] || "#94a3b8";
+  const rows = d.errors.length
+    ? d.errors.map(e => `
+        <tr>
+          <td><span class="chip chip-err">${esc(e.original)}</span></td>
+          <td><span class="chip chip-fix">${esc(e.corrected)}</span></td>
+          <td><span style="color:#64748b;font-size:.75rem">${esc(e.error_type)}</span></td>
+          <td style="font-size:.78rem">${esc(e.explanation)}</td>
+        </tr>`)
+      .join("")
+    : `<tr><td colspan="4" style="color:#6ee7b7">✅ No errors found!</td></tr>`;
+
+  return `
+    <div class="sec">Corrected Text <span class="engine-tag">Gemini</span></div>
+    <div class="text-box"><strong>${esc(d.corrected)}</strong></div>
+    <div class="sec">Quality: <span style="color:${qual};font-weight:700">${esc(d.overall_quality?.toUpperCase()||"")}</span> · ${d.error_count} error(s) found</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Original</th><th>Corrected</th><th>Type</th><th>Explanation</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderNormalize(d) {
+  const changeRows = d.changes.map(c => `
+    <tr>
+      <td style="color:#64748b;font-size:.72rem">${esc(c.type)}</td>
+      <td><span class="chip chip-err">${esc(c.original)}</span></td>
+      <td><span class="chip chip-fix">${esc(c.normalized)}</span></td>
+    </tr>`).join("");
+
+  return `
+    <div class="sec">Original <span class="engine-tag">Gemini</span></div>
+    <div class="text-box">${esc(d.original)}</div>
+    <div class="sec">Normalized · Formality: ${d.formality_score}/10</div>
+    <div class="text-box"><strong>${esc(d.normalized)}</strong></div>
+    <div class="sec">${d.change_count} Changes Made</div>
+    ${d.changes.length ? `<div class="tbl-wrap"><table>
+      <thead><tr><th>Type</th><th>Before</th><th>After</th></tr></thead>
+      <tbody>${changeRows}</tbody>
+    </table></div>` : '<p style="color:#6ee7b7">No changes needed.</p>'}
+  `;
+}
+
+function renderFullAnalysis(d) {
+  // Summary stats
+  const s = d.summary;
+  const statsHtml = `
+    <div class="stat-grid">
+      <div class="stat"><div class="val">${s.word_count}</div><div class="lbl">Words</div></div>
+      <div class="stat"><div class="val">${s.sentence_count}</div><div class="lbl">Sentences</div></div>
+      <div class="stat"><div class="val">${s.unique_words}</div><div class="lbl">Unique Words</div></div>
+      <div class="stat"><div class="val">${(s.lexical_diversity*100).toFixed(1)}%</div><div class="lbl">Lex. Diversity</div></div>
+      <div class="stat"><div class="val">${s.avg_word_length}</div><div class="lbl">Avg Word Len</div></div>
+      <div class="stat"><div class="val">${s.stop_word_count}</div><div class="lbl">Stop Words</div></div>
+    </div>
+  `;
+
+  // Sentiment
+  const sent = d.sentiment || {};
+  const sLabel = sent.label || "neutral";
+  const sScore = ((sent.score || 0) + 1) / 2 * 100; // normalize -1..1 → 0..100%
+  const sentHtml = `
+    <div class="sentiment-row">
+      <span class="sentiment-label s-${sLabel}">${esc(sLabel.toUpperCase())}</span>
+      <div class="score-bar-wrap"><div class="score-bar" style="width:${sScore.toFixed(0)}%"></div></div>
+      <span style="font-size:.8rem;color:#64748b">score: ${(sent.score||0).toFixed(2)}</span>
+    </div>
+    ${sent.reasoning ? `<p style="font-size:.82rem;color:#94a3b8;margin-top:.5rem">${esc(sent.reasoning)}</p>` : ""}
+  `;
+
+  // NER annotated
+  const annotatedHtml = (d.annotated || []).map(seg => {
+    if (seg.type === "text") return esc(seg.text);
+    const cls = `ner-${seg.label}`;
+    return `<span class="ent-mark chip ${cls}">${esc(seg.text)}<span class="ent-label">${esc(seg.label)}</span></span>`;
+  }).join("");
+
+  // POS table (compact)
+  const posRows = (d.pos_tags || []).slice(0, 50).map(t => `
+    <tr><td>${esc(t.token)}</td>
+        <td><span class="pos-badge">${esc(t.pos)}</span></td>
+        <td>${esc(t.description)}</td>
+        <td style="color:#64748b;font-style:italic;font-size:.75rem">${esc(t.lemma)}</td></tr>
+  `).join("");
+
+  // Bigrams
+  const maxB = d.bigrams.length ? d.bigrams[0].count : 1;
+  const bigramBars = d.bigrams.map(b => {
+    const pct = Math.round((b.count / maxB) * 100);
+    return `<div class="ngram-row">
+      <span class="ngram-label">${esc(b.ngram)}</span>
+      <div class="ngram-bar-wrap"><div class="ngram-bar" style="width:${pct}%"></div></div>
+      <span class="ngram-meta">${b.count}×</span>
+    </div>`;
+  }).join("");
+
+  // Spelling issues
+  const spellHtml = d.spelling_issues?.length
+    ? d.spelling_issues.map(e =>
+        `<span class="chip chip-err">${esc(e.original)}</span> → <span class="chip chip-fix">${esc(e.corrected)}</span>&nbsp; `
+      ).join("")
+    : '<span style="color:#6ee7b7;font-size:.85rem">✅ No spelling issues</span>';
+
+  const engineNote = `<span class="engine-tag">${esc(d.engines?.structural||"spaCy")}</span> + <span class="engine-tag">${esc(d.engines?.semantic||"Gemini")}</span>`;
+
+  return `
+    <div class="sec">Summary ${engineNote}</div>
+    ${statsHtml}
+
+    ${d.summary_text ? `
+    <div class="sec">AI Summary</div>
+    <div class="text-box" style="border-color:#4f46e5">${esc(d.summary_text)}</div>` : ""}
+
+    <div class="two-col" style="margin-top:1rem">
+      <div>
+        <div class="sec">Sentiment</div>
+        ${sentHtml}
+        <div class="sec" style="margin-top:1rem">Discourse Type</div>
+        <span class="info-badge">${esc(d.discourse_type||"—")}</span>
+        <div class="sec" style="margin-top:1rem">Complexity</div>
+        <span class="info-badge">${esc(d.complexity?.level||"—")}</span>
+        ${d.complexity?.factors?.length ? `<ul style="margin-top:.5rem;padding-left:1.2rem;font-size:.8rem;color:#94a3b8">${d.complexity.factors.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>` : ""}
+      </div>
+      <div>
+        <div class="sec">Topics</div>
+        <div class="chip-wrap">${(d.topics||[]).map(t=>`<span class="chip chip-topic">${esc(t)}</span>`).join("")}</div>
+        <div class="sec" style="margin-top:1rem">Key Phrases</div>
+        <div class="chip-wrap">${(d.key_phrases||[]).map(p=>`<span class="chip chip-phrase">${esc(p)}</span>`).join("")}</div>
+        <div class="sec" style="margin-top:1rem">Spelling Issues</div>
+        <div>${spellHtml}</div>
+      </div>
+    </div>
+
+    <div class="sec">Named Entities</div>
+    <div class="text-box annotated-text">${annotatedHtml || '<span style="color:#64748b">No entities detected.</span>'}</div>
+
+    <div class="sec">POS Tags ${d.pos_tags?.length > 50 ? `<span style="color:#64748b;font-weight:400">(first 50 shown)</span>` : ""}</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Token</th><th>Tag</th><th>Description</th><th>Lemma</th></tr></thead>
+        <tbody>${posRows}</tbody>
+      </table>
+    </div>
+
+    <div class="sec">Top Bigrams (NLTK)</div>
+    ${bigramBars || '<p style="color:#64748b;font-size:.85rem">Not enough words for bigrams.</p>'}
+
+    <div class="sec">Normalized Text</div>
+    <div class="text-box"><strong>${esc(d.normalized_text||"—")}</strong></div>
+  `;
+}
+
+// ── Utilities ────────────────────────────────────────────────────────────────
+const LOADER_MSGS = {
+  analyze:    "Running hybrid analysis (spaCy + Gemini)…",
+  tokenize:   "Tokenizing with spaCy GPU…",
+  pos:        "Tagging parts of speech with spaCy…",
+  ner:        "Detecting named entities with spaCy…",
+  dependency: "Parsing dependency tree…",
+  ngrams:     "Computing n-grams with NLTK…",
+  spellcheck: "Calling Gemini for spell check…",
+  normalize:  "Calling Gemini for normalization…",
+};
+
+function setLoading(on, task) {
+  document.getElementById("loader").style.display = on ? "block" : "none";
+  if (task) document.getElementById("loader-text").textContent = LOADER_MSGS[task] || "Processing…";
+  document.getElementById("run-btn").disabled = on;
+}
+function showError(msg) {
+  const el = document.getElementById("error-box");
+  el.textContent = "⚠️ " + msg;
+  el.style.display = "block";
+}
+function show(id)  { document.getElementById(id).style.display = "block"; }
+function hide(ids) { ids.forEach(id => document.getElementById(id).style.display = "none"); }
+function esc(str)  {
+  return String(str ?? "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+</script>
+</body>
+</html>
