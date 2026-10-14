@@ -4,113 +4,151 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SyntaxLab — Hybrid NLP Orchestrator</title>
+  
+  <!-- Typography: Newsreader (Editorial Apple-like Serif) + Plus Jakarta Sans (Clean Modern Sans) + JetBrains Mono (Technical Details) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    /* ── Design Tokens & Reset ───────────────────────────────────────── */
+    /* ── Editorial Warm Light Palette ────────────────────────────────── */
     :root {
-      --bg: #0b0c0e;
-      --surface: #121418;
-      --surface-elevated: #181b21;
-      --surface-subtle: #1c2027;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-hover: rgba(255, 255, 255, 0.16);
-      --border-active: rgba(255, 255, 255, 0.28);
-      --text: #f4f4f6;
-      --text-muted: #8b929e;
-      --text-faint: #555c68;
-      --accent: #ffffff;
-      --accent-invert: #000000;
-      --badge-spacy: #38bdf8;
-      --badge-nltk: #fbbf24;
-      --badge-gemini: #a78bfa;
-      --success: #34d399;
-      --danger: #f87171;
+      --bg: #faf7f2;               /* warm cream / parchment paper */
+      --bg-subtle: #f4eee5;        /* soft sand container */
+      --surface: #ffffff;          /* crisp card canvas */
+      --surface-elevated: #ffffff;
+      --border: rgba(44, 38, 30, 0.09);
+      --border-hover: rgba(44, 38, 30, 0.18);
+      --border-active: rgba(44, 38, 30, 0.35);
+      
+      --text: #1f1d1a;             /* deep warm espresso */
+      --text-muted: #6b645b;       /* soft warm taupe */
+      --text-faint: #9c9489;       /* light stone */
+      
+      --accent: #1f1d1a;           /* stark contrast black-brown */
+      --accent-warm: #8c5b36;      /* terracotta / cognac accent */
+      --accent-warm-soft: #f8efe6;
+      
+      --badge-spacy: #0284c7;
+      --badge-spacy-bg: #e0f2fe;
+      --badge-nltk: #b45309;
+      --badge-nltk-bg: #fef3c7;
+      --badge-gemini: #6d28d9;
+      --badge-gemini-bg: #ede9fe;
+      
+      --success: #15803d;
+      --success-bg: #f0fdf4;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+      
       --radius-sm: 6px;
       --radius-md: 10px;
-      --radius-lg: 14px;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-lg: 16px;
+      
+      --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     body {
-      font-family: var(--sans);
+      font-family: var(--font-sans);
       background-color: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      line-height: 1.5;
+      line-height: 1.55;
       -webkit-font-smoothing: antialiased;
-      selection-background-color: #272c35;
+      background-image: radial-gradient(rgba(44, 38, 30, 0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+      overflow-x: hidden;
+    }
+
+    /* ── Subtle Entrance Animations ──────────────────────────────────── */
+    @keyframes fadeInSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+
+    .animate-in {
+      animation: fadeInSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     /* ── Navbar ──────────────────────────────────────────────────────── */
     header {
       border-bottom: 1px solid var(--border);
-      background: rgba(11, 12, 14, 0.85);
-      backdrop-filter: blur(12px);
+      background: rgba(250, 247, 242, 0.88);
+      backdrop-filter: blur(14px);
       position: sticky;
       top: 0;
       z-index: 50;
-      padding: 0.85rem 1.75rem;
+      padding: 0.95rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      transition: border-color 0.2s ease;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
       text-decoration: none;
       color: inherit;
     }
 
     .brand-mark {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      background: var(--surface-elevated);
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.95rem;
+      font-weight: 500;
+      background: var(--surface);
       border: 1px solid var(--border);
-      padding: 0.3rem 0.55rem;
+      padding: 0.25rem 0.65rem;
       border-radius: var(--radius-sm);
-      color: var(--text);
+      color: var(--accent-warm);
+      box-shadow: 0 1px 2px rgba(44, 38, 30, 0.04);
     }
 
     .brand-title {
-      font-size: 0.95rem;
-      font-weight: 600;
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-weight: 500;
       letter-spacing: -0.01em;
       color: var(--text);
     }
 
     .brand-subtitle {
+      font-family: var(--font-sans);
       font-size: 0.75rem;
       color: var(--text-muted);
-      margin-left: 0.25rem;
+      margin-left: 0.35rem;
       font-weight: 400;
     }
 
     .nav-meta {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
 
     .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       font-size: 0.72rem;
       color: var(--text-muted);
       background: var(--surface);
       border: 1px solid var(--border);
-      padding: 0.3rem 0.65rem;
+      padding: 0.3rem 0.75rem;
       border-radius: 999px;
+      box-shadow: 0 1px 2px rgba(44, 38, 30, 0.03);
     }
 
     .status-dot {
@@ -118,236 +156,272 @@
       height: 6px;
       border-radius: 50%;
       background: var(--success);
-      box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+      box-shadow: 0 0 6px rgba(21, 128, 61, 0.3);
+      animation: pulseSoft 2.5s infinite ease-in-out;
     }
 
     .git-link {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text);
       text-decoration: none;
-      padding: 0.3rem 0.65rem;
+      padding: 0.35rem 0.8rem;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border);
       background: var(--surface);
-      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(44, 38, 30, 0.03);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .git-link:hover {
-      color: var(--text);
       border-color: var(--border-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(44, 38, 30, 0.06);
     }
 
-    /* ── Main Layout ─────────────────────────────────────────────────── */
+    /* ── Main Container ──────────────────────────────────────────────── */
     main {
-      max-width: 1040px;
+      max-width: 980px;
       margin: 0 auto;
-      padding: 2.25rem 1.25rem 5rem;
+      padding: 3rem 1.5rem 6rem;
     }
 
-    /* ── Hero / Intro ────────────────────────────────────────────────── */
+    /* ── Hero Editorial Header ───────────────────────────────────────── */
     .hero {
-      margin-bottom: 2rem;
+      margin-bottom: 2.75rem;
+      animation: fadeInSlideUp 0.5s ease;
     }
 
     .hero-eyebrow {
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--text-faint);
-      margin-bottom: 0.4rem;
+      color: var(--accent-warm);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .hero-eyebrow::before {
+      content: "";
+      display: inline-block;
+      width: 14px;
+      height: 1px;
+      background: var(--accent-warm);
     }
 
     .hero-headline {
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
+      font-family: var(--font-serif);
+      font-size: 2.6rem;
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
       color: var(--text);
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-headline em {
+      font-style: italic;
+      color: var(--accent-warm);
     }
 
     .hero-description {
-      font-size: 0.92rem;
+      font-family: var(--font-sans);
+      font-size: 0.98rem;
       color: var(--text-muted);
-      max-width: 680px;
+      max-width: 660px;
+      line-height: 1.6;
     }
 
-    /* ── Panel Box (Card replacement) ────────────────────────────────── */
+    /* ── Panel Cards ─────────────────────────────────────────────────── */
     .panel {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(44, 38, 30, 0.03);
+      transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .panel:hover {
+      box-shadow: 0 4px 14px rgba(44, 38, 30, 0.05);
+      border-color: var(--border-hover);
     }
 
     .panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
     }
 
     .panel-label {
-      font-family: var(--mono);
-      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--text-muted);
+      color: var(--text-faint);
     }
 
-    /* ── Textarea & Editor ───────────────────────────────────────────── */
-    .editor-wrapper {
-      position: relative;
-    }
-
+    /* ── Textarea ────────────────────────────────────────────────────── */
     textarea {
       width: 100%;
-      min-height: 120px;
+      min-height: 125px;
       background: var(--bg);
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: var(--radius-md);
-      padding: 0.9rem 1rem;
-      font-family: var(--sans);
-      font-size: 0.95rem;
-      line-height: 1.6;
+      padding: 1rem 1.1rem;
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      line-height: 1.65;
       resize: vertical;
       outline: none;
-      transition: border-color 0.15s ease;
+      transition: all 0.2s ease;
     }
 
     textarea:focus {
+      background: #ffffff;
       border-color: var(--border-active);
+      box-shadow: 0 0 0 3px rgba(140, 91, 54, 0.08);
     }
 
     .editor-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 0.65rem;
+      margin-top: 0.85rem;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .preset-pills {
       display: flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
       flex-wrap: wrap;
     }
 
     .preset-label {
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       font-size: 0.68rem;
       color: var(--text-faint);
       margin-right: 0.2rem;
     }
 
     .preset-btn {
-      background: transparent;
+      background: var(--bg);
       border: 1px solid var(--border);
       color: var(--text-muted);
-      font-size: 0.74rem;
-      padding: 0.2rem 0.55rem;
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      font-weight: 500;
+      padding: 0.25rem 0.65rem;
       border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .preset-btn:hover {
-      border-color: var(--border-hover);
-      color: var(--text);
-      background: var(--surface-elevated);
+      border-color: var(--accent-warm);
+      color: var(--accent-warm);
+      background: var(--accent-warm-soft);
+      transform: translateY(-1px);
     }
 
     .char-indicator {
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       font-size: 0.72rem;
       color: var(--text-faint);
     }
 
-    /* ── Segmented Control / Navigation ──────────────────────────────── */
+    /* ── Segmented Control / Tabs ────────────────────────────────────── */
     .controls-panel {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 2px 8px rgba(44, 38, 30, 0.03);
     }
 
     .tabs-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.35rem;
-      padding-bottom: 0.75rem;
+      gap: 0.4rem;
+      padding-bottom: 0.95rem;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 0.85rem;
+      margin-bottom: 1rem;
     }
 
     .tab-btn {
       background: transparent;
       border: 1px solid transparent;
       color: var(--text-muted);
-      font-family: var(--sans);
+      font-family: var(--font-sans);
       font-size: 0.82rem;
       font-weight: 500;
-      padding: 0.4rem 0.75rem;
+      padding: 0.42rem 0.85rem;
       border-radius: var(--radius-sm);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      transition: all 0.15s ease;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .tab-btn:hover {
       color: var(--text);
-      background: var(--surface-elevated);
+      background: var(--bg-subtle);
     }
 
     .tab-btn.active {
       background: var(--text);
-      color: var(--accent-invert);
+      color: #ffffff;
       font-weight: 600;
+      box-shadow: 0 2px 6px rgba(31, 29, 26, 0.15);
+      transform: translateY(-1px);
     }
 
     .tag-badge {
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       font-size: 0.62rem;
-      font-weight: 500;
-      padding: 0.1rem 0.35rem;
-      border-radius: 3px;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
       letter-spacing: -0.02em;
     }
 
     .tab-btn.active .tag-badge {
-      background: rgba(0, 0, 0, 0.15);
-      color: #000000;
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
     }
 
-    .tag-spacy { background: rgba(56, 189, 248, 0.12); color: var(--badge-spacy); }
-    .tag-nltk { background: rgba(251, 191, 36, 0.12); color: var(--badge-nltk); }
-    .tag-gemini { background: rgba(167, 139, 250, 0.12); color: var(--badge-gemini); }
+    .tag-spacy { background: var(--badge-spacy-bg); color: var(--badge-spacy); }
+    .tag-nltk { background: var(--badge-nltk-bg); color: var(--badge-nltk); }
+    .tag-gemini { background: var(--badge-gemini-bg); color: var(--badge-gemini); }
 
-    /* ── Sub-controls (N-gram sliders) ───────────────────────────────── */
+    /* ── Sub-controls (N-grams) ──────────────────────────────────────── */
     .sub-controls {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
-      padding: 0.5rem 0 0.25rem;
+      gap: 1.5rem;
+      padding: 0.4rem 0 0.2rem;
       flex-wrap: wrap;
     }
 
     .control-item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .control-item label {
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       font-size: 0.75rem;
       color: var(--text-muted);
     }
@@ -357,15 +431,19 @@
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: var(--radius-sm);
-      padding: 0.3rem 0.6rem;
-      font-family: var(--mono);
-      font-size: 0.78rem;
+      padding: 0.35rem 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
       outline: none;
       cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+    select:focus {
+      border-color: var(--border-active);
     }
 
     input[type=range] {
-      accent-color: var(--text);
+      accent-color: var(--accent-warm);
       cursor: pointer;
     }
 
@@ -373,44 +451,48 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 0.75rem;
+      margin-top: 0.85rem;
     }
 
     .run-btn {
       background: var(--text);
-      color: var(--accent-invert);
+      color: #ffffff;
       border: none;
-      font-family: var(--sans);
-      font-size: 0.88rem;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
       font-weight: 600;
-      padding: 0.65rem 1.6rem;
+      padding: 0.72rem 1.85rem;
       border-radius: var(--radius-sm);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      transition: opacity 0.15s ease, transform 0.1s ease;
+      gap: 0.6rem;
+      box-shadow: 0 2px 8px rgba(31, 29, 26, 0.15);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .run-btn:hover {
-      opacity: 0.92;
+      background: var(--accent-warm);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(140, 91, 54, 0.25);
     }
 
     .run-btn:active {
-      transform: translateY(1px);
+      transform: translateY(0);
     }
 
     .run-btn:disabled {
-      opacity: 0.35;
+      opacity: 0.4;
       cursor: not-allowed;
+      transform: none;
     }
 
     .run-shortcut {
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       font-size: 0.68rem;
-      opacity: 0.6;
-      border: 1px solid rgba(0, 0, 0, 0.25);
-      padding: 0.1rem 0.3rem;
+      opacity: 0.65;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 0.1rem 0.35rem;
       border-radius: 3px;
     }
 
@@ -418,22 +500,23 @@
       background: transparent;
       border: none;
       color: var(--text-faint);
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       font-size: 0.72rem;
       cursor: pointer;
+      transition: color 0.15s ease;
     }
     .clear-btn:hover {
-      color: var(--text-muted);
+      color: var(--danger);
     }
 
     /* ── Loader ──────────────────────────────────────────────────────── */
     #loader {
       display: none;
       text-align: center;
-      padding: 2rem 1rem;
+      padding: 2.25rem 1rem;
       color: var(--text-muted);
-      font-family: var(--mono);
-      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
     }
 
     .loading-pulse {
@@ -441,41 +524,35 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--text);
-      margin-right: 0.5rem;
-      animation: pulseAnim 1.2s infinite ease-in-out;
-    }
-
-    @keyframes pulseAnim {
-      0%, 100% { transform: scale(0.7); opacity: 0.4; }
-      50% { transform: scale(1.2); opacity: 1; }
+      background: var(--accent-warm);
+      margin-right: 0.55rem;
+      animation: pulseSoft 1.1s infinite ease-in-out;
     }
 
     /* ── Error Box ───────────────────────────────────────────────────── */
     #error-box {
       display: none;
-      background: rgba(248, 113, 113, 0.08);
-      border: 1px solid rgba(248, 113, 113, 0.3);
+      background: var(--danger-bg);
+      border: 1px solid rgba(185, 28, 28, 0.2);
       border-radius: var(--radius-md);
-      padding: 0.9rem 1.1rem;
+      padding: 1rem 1.25rem;
       color: var(--danger);
-      font-size: 0.84rem;
+      font-size: 0.86rem;
       margin-bottom: 1.5rem;
-      font-family: var(--mono);
+      font-family: var(--font-mono);
     }
 
-    /* ── Results Container ───────────────────────────────────────────── */
+    /* ── Results Panel ───────────────────────────────────────────────── */
     #results {
       display: none;
     }
 
-    /* Section Subheads */
     .sec-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: 1.4rem 0 0.65rem;
-      padding-bottom: 0.4rem;
+      margin: 1.6rem 0 0.8rem;
+      padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border);
     }
     .sec-header:first-child {
@@ -483,159 +560,177 @@
     }
 
     .sec-title {
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--text);
     }
 
     .engine-pill {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-faint);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      background: var(--bg);
       border: 1px solid var(--border);
-      padding: 0.15rem 0.45rem;
+      padding: 0.15rem 0.5rem;
       border-radius: 4px;
     }
 
-    /* Stats Matrix */
+    /* Stats Grid */
     .stat-matrix {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 0.65rem;
-      margin-bottom: 1rem;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
     }
 
     .stat-tile {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 0.75rem 0.85rem;
+      padding: 0.85rem 1rem;
+      transition: all 0.2s ease;
+    }
+    .stat-tile:hover {
+      background: #ffffff;
+      border-color: var(--border-hover);
+      box-shadow: 0 2px 6px rgba(44, 38, 30, 0.04);
+      transform: translateY(-1px);
     }
 
     .stat-number {
-      font-family: var(--mono);
-      font-size: 1.45rem;
-      font-weight: 600;
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 500;
       color: var(--text);
       line-height: 1.1;
     }
 
     .stat-caption {
-      font-size: 0.7rem;
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
       color: var(--text-muted);
       margin-top: 0.35rem;
+      font-weight: 500;
     }
 
-    /* Text Diff & AI Summary box */
+    /* Editorial AI Summary Card */
     .summary-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--badge-gemini);
+      background: var(--accent-warm-soft);
+      border: 1px solid rgba(140, 91, 54, 0.2);
+      border-left: 4px solid var(--accent-warm);
       border-radius: var(--radius-sm);
-      padding: 0.9rem 1.1rem;
-      font-size: 0.92rem;
-      line-height: 1.6;
+      padding: 1.1rem 1.35rem;
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      line-height: 1.68;
       color: var(--text);
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
 
     .text-diff-box {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 0.85rem 1rem;
-      font-size: 0.9rem;
-      line-height: 1.65;
+      padding: 1rem 1.15rem;
+      font-family: var(--font-serif);
+      font-size: 1.02rem;
+      line-height: 1.7;
     }
 
-    /* Chips */
+    /* Token Chips */
     .chips-flow {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.35rem;
+      gap: 0.4rem;
     }
 
     .token-chip {
-      font-family: var(--mono);
-      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
       background: var(--bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.2rem 0.5rem;
+      padding: 0.25rem 0.55rem;
       border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+    }
+    .token-chip:hover {
+      background: #ffffff;
+      border-color: var(--border-active);
+      transform: translateY(-1px);
     }
 
-    /* POS Tag Badge */
+    /* POS Tag */
     .pos-tag {
-      font-family: var(--mono);
-      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
       font-weight: 600;
-      background: var(--surface-elevated);
-      border: 1px solid var(--border);
+      background: var(--badge-spacy-bg);
+      border: 1px solid rgba(2, 132, 199, 0.25);
       color: var(--badge-spacy);
-      padding: 0.15rem 0.4rem;
+      padding: 0.15rem 0.45rem;
       border-radius: 4px;
     }
 
-    /* NER Entities */
+    /* Named Entities with Warm Tints */
     .ent-chip {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      padding: 0.15rem 0.45rem;
+      padding: 0.12rem 0.5rem;
       border-radius: 4px;
-      font-size: 0.82rem;
+      font-size: 0.88rem;
       margin: 0.1rem;
       border: 1px solid transparent;
+      font-family: var(--font-sans);
     }
 
     .ent-label {
-      font-family: var(--mono);
-      font-size: 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
       font-weight: 700;
       text-transform: uppercase;
-      opacity: 0.8;
+      opacity: 0.85;
     }
 
-    .ent-PERSON    { background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); color: #7dd3fc; }
-    .ent-ORG       { background: rgba(167, 139, 250, 0.12); border-color: rgba(167, 139, 250, 0.3); color: #c4b5fd; }
-    .ent-GPE       { background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.3); color: #6ee7b7; }
-    .ent-DATE      { background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.3); color: #fde047; }
-    .ent-PRODUCT   { background: rgba(244, 114, 182, 0.12); border-color: rgba(244, 114, 182, 0.3); color: #f472b6; }
-    .ent-default   { background: var(--surface-elevated); border-color: var(--border); color: var(--text-muted); }
+    .ent-PERSON    { background: #e0f2fe; border-color: #bae6fd; color: #0369a1; }
+    .ent-ORG       { background: #ede9fe; border-color: #ddd6fe; color: #6d28d9; }
+    .ent-GPE       { background: #fef3c7; border-color: #fde68a; color: #b45309; }
+    .ent-DATE      { background: #f8efe6; border-color: #eedcc9; color: var(--accent-warm); }
+    .ent-PRODUCT   { background: #fce7f3; border-color: #fbcfe8; color: #be185d; }
+    .ent-default   { background: var(--bg); border-color: var(--border); color: var(--text-muted); }
 
     /* Tables */
     .table-container {
       overflow-x: auto;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      margin-top: 0.5rem;
+      margin-top: 0.65rem;
+      background: #ffffff;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       text-align: left;
     }
 
     th {
-      font-family: var(--mono);
-      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--text-muted);
       background: var(--bg);
-      padding: 0.6rem 0.85rem;
+      padding: 0.65rem 0.95rem;
       border-bottom: 1px solid var(--border);
     }
 
     td {
-      padding: 0.55rem 0.85rem;
+      padding: 0.6rem 0.95rem;
       border-bottom: 1px solid var(--border);
       color: var(--text);
     }
@@ -645,49 +740,48 @@
     }
 
     tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(44, 38, 30, 0.02);
     }
 
-    /* N-gram frequency bars */
+    /* N-gram bars */
     .ngram-metric-row {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
-      padding: 0.35rem 0;
+      gap: 1rem;
+      padding: 0.4rem 0;
     }
 
     .ngram-term {
-      font-family: var(--mono);
-      font-size: 0.78rem;
+      font-family: var(--font-serif);
+      font-size: 0.92rem;
       color: var(--text);
-      min-width: 160px;
+      min-width: 170px;
     }
 
     .ngram-track {
       flex: 1;
-      height: 6px;
-      background: var(--bg);
-      border: 1px solid var(--border);
+      height: 7px;
+      background: var(--bg-subtle);
       border-radius: 999px;
       overflow: hidden;
     }
 
     .ngram-fill {
       height: 100%;
-      background: var(--text);
+      background: var(--accent-warm);
       border-radius: 999px;
       transition: width 0.4s ease;
     }
 
     .ngram-count-tag {
-      font-family: var(--mono);
-      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
       color: var(--text-muted);
-      min-width: 90px;
+      min-width: 95px;
       text-align: right;
     }
 
-    /* Sentiment track */
+    /* Sentiment Meter */
     .sentiment-box {
       display: flex;
       align-items: center;
@@ -695,13 +789,13 @@
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1.1rem;
       margin-bottom: 0.75rem;
     }
 
     .sentiment-badge {
-      font-family: var(--mono);
-      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -714,7 +808,7 @@
     .sent-meter-wrap {
       flex: 1;
       height: 5px;
-      background: var(--surface-subtle);
+      background: var(--border);
       border-radius: 999px;
       position: relative;
     }
@@ -723,19 +817,20 @@
       position: absolute;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 11px;
-      height: 11px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background: var(--text);
-      border: 2px solid var(--bg);
+      border: 2px solid #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
     /* Dependency SVG Container */
     #dep-svg-wrap {
-      background: #08090b;
+      background: #ffffff;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 1rem;
+      padding: 1.25rem;
       overflow-x: auto;
     }
     #dep-svg-wrap svg {
@@ -747,8 +842,8 @@
     .grid-duo {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      gap: 1.15rem;
+      margin-bottom: 1.25rem;
     }
     @media(max-width: 720px) {
       .grid-duo { grid-template-columns: 1fr; }
@@ -758,17 +853,17 @@
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 0.85rem 1rem;
+      padding: 0.95rem 1.15rem;
     }
 
     /* Footer */
     footer {
       border-top: 1px solid var(--border);
-      padding: 1.5rem;
+      padding: 2rem 1rem;
       text-align: center;
       color: var(--text-faint);
-      font-size: 0.76rem;
-      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
     }
   </style>
 </head>
@@ -776,18 +871,18 @@
 
 <header>
   <div class="brand">
-    <span class="brand-mark">NLP.01</span>
+    <span class="brand-mark">SyntaxLab</span>
     <div>
-      <span class="brand-title">SyntaxLab</span>
-      <span class="brand-subtitle">/ Hybrid Orchestrator</span>
+      <span class="brand-title">Linguistic Orchestrator</span>
+      <span class="brand-subtitle">/ Hybrid NLP</span>
     </div>
   </div>
   <div class="nav-meta">
     <div class="status-pill">
       <span class="status-dot"></span>
-      <span id="device-text">Runtime: Initializing…</span>
+      <span id="device-text">Runtime: Connecting…</span>
     </div>
-    <a href="https://github.com/SiddharthaAryan-2003/NLP_analyzer" target="_blank" class="git-link">GitHub ↗</a>
+    <a href="https://github.com/SiddharthaAryan-2003/NLP_analyzer" target="_blank" class="git-link">Repository ↗</a>
   </div>
 </header>
 
@@ -795,9 +890,9 @@
 
   <div class="hero">
     <div class="hero-eyebrow">Natural Language Processing Curriculum Suite</div>
-    <h1 class="hero-headline">Computational Syntax & Semantic Orchestration</h1>
+    <h1 class="hero-headline">Computational Syntax &amp; <em>Semantic Reasoning</em></h1>
     <p class="hero-description">
-      Deterministic structural parsing (tokenization, Penn Treebank POS, smoothed N-grams, dependency grammars) running locally alongside Google Gemini for contextual reasoning.
+      Deterministic structural parsing (segmentation, Penn Treebank POS tagsets, Lidstone-smoothed N-grams, dependency grammars) running locally on your hardware, orchestrated with Google Gemini for discourse understanding.
     </p>
   </div>
 
@@ -816,8 +911,8 @@
       <div class="preset-pills">
         <span class="preset-label">Test presets:</span>
         <button class="preset-btn" data-preset="tech">Named Entities</button>
-        <button class="preset-btn" data-preset="grammar">Spelling & Normalization</button>
-        <button class="preset-btn" data-preset="syntax">Syntax & Dependencies</button>
+        <button class="preset-btn" data-preset="grammar">Spelling &amp; Normalization</button>
+        <button class="preset-btn" data-preset="syntax">Syntax &amp; Dependencies</button>
       </div>
       <button class="clear-btn" id="clear-btn">Clear text</button>
     </div>
@@ -852,7 +947,7 @@
       </button>
     </div>
 
-    <!-- N-gram controls (only active on n-gram tab) -->
+    <!-- N-gram controls -->
     <div id="ngram-controls" style="display: none;">
       <div class="sub-controls">
         <div class="control-item">
@@ -866,8 +961,8 @@
           </select>
         </div>
         <div class="control-item">
-          <label>Lidstone α: <span id="alpha-display" style="font-family: var(--mono); color: var(--text);">0.50</span></label>
-          <input type="range" id="alpha-slider" min="0.01" max="1.0" step="0.01" value="0.5" style="width: 130px;">
+          <label>Lidstone α: <span id="alpha-display" style="font-family: var(--font-mono); color: var(--text); font-weight: 600;">0.50</span></label>
+          <input type="range" id="alpha-slider" min="0.01" max="1.0" step="0.01" value="0.5" style="width: 140px;">
         </div>
       </div>
     </div>
@@ -883,21 +978,21 @@
   <!-- Loading State -->
   <div id="loader">
     <span class="loading-pulse"></span>
-    <span id="loader-text">Executing deterministic parser…</span>
+    <span id="loader-text">Evaluating linguistic model…</span>
   </div>
 
   <!-- Error Alert -->
   <div id="error-box"></div>
 
   <!-- Results Viewport -->
-  <div id="results" class="panel">
+  <div id="results" class="panel animate-in">
     <div id="results-content"></div>
   </div>
 
 </main>
 
 <footer>
-  SyntaxLab · Hybrid Architecture with spaCy (Local POS/NER/Syntax), NLTK (Smoothed N-Grams) & Google Gemini (LLM API)
+  SyntaxLab · Hybrid Architecture with spaCy (Local POS/NER/Syntax), NLTK (Smoothed N-Grams) &amp; Google Gemini (LLM API)
 </footer>
 
 <script>
@@ -1034,8 +1129,8 @@ function renderTokenize(d) {
     <div class="sec-header"><span class="sec-title">Sentence Segmentation</span></div>
     <div style="margin-bottom: 1.25rem;">
       ${d.sentences.map((s, i) => `
-        <div style="font-size: 0.88rem; padding: 0.4rem 0; border-bottom: 1px solid var(--border);">
-          <span style="font-family: var(--mono); color: var(--text-faint); margin-right: 0.5rem;">[${i+1}]</span>${esc(s)}
+        <div style="font-family: var(--font-serif); font-size: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+          <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-warm); margin-right: 0.6rem;">[${i+1}]</span>${esc(s)}
         </div>
       `).join("")}
     </div>
@@ -1050,11 +1145,11 @@ function renderTokenize(d) {
 function renderPOS(d) {
   const rows = d.tagged.map(t => `
     <tr>
-      <td style="font-family: var(--mono); font-weight: 500;">${esc(t.token)}</td>
+      <td style="font-family: var(--font-serif); font-size: 0.95rem; font-weight: 500;">${esc(t.token)}</td>
       <td><span class="pos-tag">${esc(t.pos)}</span></td>
-      <td style="color: var(--text-muted); font-size: 0.78rem;">${esc(t.description)}</td>
-      <td style="font-family: var(--mono); color: var(--text-faint);">${esc(t.lemma)}</td>
-      <td style="font-family: var(--mono); font-size: 0.72rem;">${t.is_stop ? '<span style="color: var(--badge-nltk)">true</span>' : 'false'}</td>
+      <td style="color: var(--text-muted); font-size: 0.8rem;">${esc(t.description)}</td>
+      <td style="font-family: var(--font-mono); color: var(--text-faint); font-size: 0.76rem;">${esc(t.lemma)}</td>
+      <td style="font-family: var(--font-mono); font-size: 0.74rem;">${t.is_stop ? '<span style="color: var(--badge-nltk)">true</span>' : '<span style="color: var(--text-faint)">false</span>'}</td>
     </tr>
   `).join("");
 
@@ -1066,7 +1161,7 @@ function renderPOS(d) {
     <div class="table-container">
       <table>
         <thead>
-          <tr><th>Token</th><th>Tag</th><th>Syntactic Role</th><th>Lemma</th><th>Stop Word</th></tr>
+          <tr><th>Token</th><th>Tag</th><th>Syntactic Role</th><th>Stem / Lemma</th><th>Stop Word</th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>
@@ -1078,7 +1173,7 @@ function renderNER(d) {
   if (!d.entity_count) {
     return `
       <div class="sec-header"><span class="sec-title">Named Entity Classification</span></div>
-      <p style="color: var(--text-muted); font-size: 0.88rem;">No real-world named entities recognized in the input sequence.</p>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">No real-world named entities recognized in the input sequence.</p>
     `;
   }
 
@@ -1089,10 +1184,10 @@ function renderNER(d) {
 
   const rows = d.entities.map(e => `
     <tr>
-      <td style="font-weight: 600;">${esc(e.text)}</td>
+      <td style="font-weight: 600; font-family: var(--font-serif); font-size: 0.96rem;">${esc(e.text)}</td>
       <td><span class="ent-chip ent-${e.label}">${esc(e.label)}</span></td>
-      <td style="color: var(--text-muted); font-size: 0.78rem;">${esc(e.description)}</td>
-      <td style="font-family: var(--mono); font-size: 0.72rem; color: var(--text-faint);">${e.start} : ${e.end}</td>
+      <td style="color: var(--text-muted); font-size: 0.82rem;">${esc(e.description)}</td>
+      <td style="font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-faint);">${e.start} : ${e.end}</td>
     </tr>
   `).join("");
 
@@ -1116,10 +1211,10 @@ function renderNER(d) {
 function renderDependency(d) {
   const rows = d.dependencies.map(dep => `
     <tr>
-      <td style="font-family: var(--mono); font-weight: 600;">${esc(dep.token)}</td>
+      <td style="font-family: var(--font-serif); font-size: 0.95rem; font-weight: 500;">${esc(dep.token)}</td>
       <td><span class="pos-tag">${esc(dep.dep)}</span></td>
-      <td style="color: var(--text-muted);">${esc(dep.head)}</td>
-      <td style="font-family: var(--mono); font-size: 0.75rem; color: var(--text-faint);">${dep.children.length ? esc(dep.children.join(", ")) : "—"}</td>
+      <td style="color: var(--text-muted); font-family: var(--font-serif);">${esc(dep.head)}</td>
+      <td style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-faint);">${dep.children.length ? esc(dep.children.join(", ")) : "—"}</td>
     </tr>
   `).join("");
 
@@ -1129,7 +1224,7 @@ function renderDependency(d) {
       <span class="engine-pill">${esc(d.engine)}</span>
     </div>
     <div id="dep-svg-wrap">${d.svg}</div>
-    ${d.note ? `<p style="font-size: 0.75rem; color: var(--text-faint); margin-top: 0.5rem; font-family: var(--mono);">// ${esc(d.note)}</p>` : ""}
+    ${d.note ? `<p style="font-size: 0.75rem; color: var(--text-faint); margin-top: 0.5rem; font-family: var(--font-mono);">// ${esc(d.note)}</p>` : ""}
 
     <div class="sec-header" style="margin-top: 1.5rem;"><span class="sec-title">Grammatical Relations</span></div>
     <div class="table-container">
@@ -1142,7 +1237,7 @@ function renderDependency(d) {
 }
 
 function renderNgrams(d) {
-  if (d.error) return `<p style="color: var(--danger); font-family: var(--mono);">Error: ${esc(d.error)}</p>`;
+  if (d.error) return `<p style="color: var(--danger); font-family: var(--font-mono);">Error: ${esc(d.error)}</p>`;
   const max = d.top_10.length ? d.top_10[0].count : 1;
   const bars = d.top_10.map(item => {
     const pct = Math.round((item.count / max) * 100);
@@ -1181,13 +1276,13 @@ function renderSpellCheck(d) {
   const rows = d.errors.length
     ? d.errors.map(e => `
         <tr>
-          <td><span style="font-family: var(--mono); color: var(--danger); text-decoration: line-through;">${esc(e.original)}</span></td>
-          <td><span style="font-family: var(--mono); color: var(--success); font-weight: 600;">${esc(e.corrected)}</span></td>
+          <td><span style="font-family: var(--font-serif); font-size: 0.95rem; color: var(--danger); text-decoration: line-through;">${esc(e.original)}</span></td>
+          <td><span style="font-family: var(--font-serif); font-size: 0.95rem; color: var(--success); font-weight: 600;">${esc(e.corrected)}</span></td>
           <td><span class="engine-pill">${esc(e.error_type)}</span></td>
-          <td style="color: var(--text-muted); font-size: 0.78rem;">${esc(e.explanation)}</td>
+          <td style="color: var(--text-muted); font-size: 0.8rem;">${esc(e.explanation)}</td>
         </tr>
       `).join("")
-    : `<tr><td colspan="4" style="color: var(--success); font-family: var(--mono);">No orthographic or grammatical anomalies identified.</td></tr>`;
+    : `<tr><td colspan="4" style="color: var(--success); font-family: var(--font-mono); font-size: 0.85rem;">No orthographic or grammatical anomalies identified.</td></tr>`;
 
   return `
     <div class="sec-header">
@@ -1215,14 +1310,14 @@ function renderNormalize(d) {
   const rows = d.changes.map(c => `
     <tr>
       <td><span class="engine-pill">${esc(c.type)}</span></td>
-      <td style="font-family: var(--mono); color: var(--text-muted);">${esc(c.original)}</td>
-      <td style="font-family: var(--mono); color: var(--text); font-weight: 500;">${esc(c.normalized)}</td>
+      <td style="font-family: var(--font-serif); font-size: 0.95rem; color: var(--text-muted);">${esc(c.original)}</td>
+      <td style="font-family: var(--font-serif); font-size: 0.95rem; color: var(--text); font-weight: 600;">${esc(c.normalized)}</td>
     </tr>
   `).join("");
 
   return `
     <div class="sec-header">
-      <span class="sec-title">Text Normalization & Contraction Resolution</span>
+      <span class="sec-title">Text Normalization &amp; Canonical Forms</span>
       <span class="engine-pill">Formality Index: ${d.formality_score} / 10</span>
     </div>
     <div class="text-diff-box" style="margin-bottom: 1.25rem;">
@@ -1237,7 +1332,7 @@ function renderNormalize(d) {
           <tbody>${rows}</tbody>
         </table>
       </div>
-    ` : '<p style="color: var(--text-muted); font-size: 0.82rem;">No text alterations required; corpus is in canonical form.</p>'}
+    ` : '<p style="color: var(--text-muted); font-size: 0.85rem;">No text alterations required; corpus is in canonical form.</p>'}
   `;
 }
 
@@ -1250,10 +1345,10 @@ function renderFullAnalysis(d) {
   // POS Compact
   const posRows = (d.pos_tags || []).slice(0, 30).map(t => `
     <tr>
-      <td style="font-family: var(--mono);">${esc(t.token)}</td>
+      <td style="font-family: var(--font-serif); font-size: 0.95rem;">${esc(t.token)}</td>
       <td><span class="pos-tag">${esc(t.pos)}</span></td>
-      <td style="color: var(--text-muted); font-size: 0.75rem;">${esc(t.description)}</td>
-      <td style="font-family: var(--mono); color: var(--text-faint); font-size: 0.75rem;">${esc(t.lemma)}</td>
+      <td style="color: var(--text-muted); font-size: 0.78rem;">${esc(t.description)}</td>
+      <td style="font-family: var(--font-mono); color: var(--text-faint); font-size: 0.75rem;">${esc(t.lemma)}</td>
     </tr>
   `).join("");
 
@@ -1263,9 +1358,9 @@ function renderFullAnalysis(d) {
     const pct = Math.round((b.count / maxB) * 100);
     return `
       <div class="ngram-metric-row">
-        <span class="ngram-term" style="font-size: 0.74rem;">${esc(b.ngram)}</span>
+        <span class="ngram-term" style="font-size: 0.82rem;">${esc(b.ngram)}</span>
         <div class="ngram-track"><div class="ngram-fill" style="width: ${pct}%"></div></div>
-        <span class="ngram-count-tag" style="font-size: 0.7rem;">${b.count}×</span>
+        <span class="ngram-count-tag" style="font-size: 0.72rem;">${b.count}×</span>
       </div>
     `;
   }).join("");
@@ -1298,31 +1393,31 @@ function renderFullAnalysis(d) {
 
     <div class="grid-duo">
       <div class="sub-box">
-        <div class="sec-title" style="margin-bottom: 0.5rem;">Sentiment Polarity</div>
+        <div class="sec-title" style="font-size: 1rem; margin-bottom: 0.5rem;">Sentiment Polarity</div>
         <div class="sentiment-box">
           <span class="sentiment-badge sent-${sLabel}">${esc(sLabel)}</span>
           <div class="sent-meter-wrap"><div class="sent-meter-dot" style="left: ${sScore}%;"></div></div>
-          <span style="font-family: var(--mono); font-size: 0.72rem; color: var(--text-faint);">${(sent.score||0).toFixed(2)}</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-faint);">${(sent.score||0).toFixed(2)}</span>
         </div>
-        ${sent.reasoning ? `<p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.45;">${esc(sent.reasoning)}</p>` : ""}
+        ${sent.reasoning ? `<p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">${esc(sent.reasoning)}</p>` : ""}
       </div>
 
       <div class="sub-box">
-        <div class="sec-title" style="margin-bottom: 0.5rem;">Discourse & Complexity</div>
-        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.65rem;">
+        <div class="sec-title" style="font-size: 1rem; margin-bottom: 0.5rem;">Discourse &amp; Complexity</div>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
           <span class="engine-pill" style="color: var(--text);">Mode: ${esc(d.discourse_type || "informative")}</span>
           <span class="engine-pill" style="color: var(--text);">Grade: ${esc(d.complexity?.level || "standard")}</span>
         </div>
-        <div class="sec-title" style="margin-top: 0.8rem; margin-bottom: 0.35rem;">Dominant Topic Tags</div>
+        <div class="sec-title" style="font-size: 0.85rem; margin-top: 0.8rem; margin-bottom: 0.35rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint);">Dominant Topic Tags</div>
         <div class="chips-flow">
-          ${(d.topics || []).map(t => `<span class="token-chip" style="font-size: 0.7rem;">#${esc(t)}</span>`).join("")}
+          ${(d.topics || []).map(t => `<span class="token-chip" style="font-size: 0.74rem;">#${esc(t)}</span>`).join("")}
         </div>
       </div>
     </div>
 
     <div class="sec-header"><span class="sec-title">Named Entities In Context</span></div>
     <div class="text-diff-box" style="margin-bottom: 1.25rem;">
-      ${annotatedHtml || '<span style="color: var(--text-muted); font-size: 0.82rem;">No entity mentions found.</span>'}
+      ${annotatedHtml || '<span style="color: var(--text-muted); font-size: 0.85rem;">No entity mentions found.</span>'}
     </div>
 
     <div class="sec-header">
@@ -1337,7 +1432,7 @@ function renderFullAnalysis(d) {
 
     <div class="sec-header"><span class="sec-title">Frequency Bigrams (Top 5)</span><span class="engine-pill">NLTK</span></div>
     <div style="margin-bottom: 1rem;">
-      ${bigramBars || '<span style="color: var(--text-faint); font-size: 0.8rem;">Insufficient corpus length for bigrams.</span>'}
+      ${bigramBars || '<span style="color: var(--text-faint); font-size: 0.82rem;">Insufficient corpus length for bigrams.</span>'}
     </div>
 
     <div class="sec-header"><span class="sec-title">Normalized Representation</span></div>
