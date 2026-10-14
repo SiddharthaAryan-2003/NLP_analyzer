@@ -1,56 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SyntaxLab — Hybrid NLP Orchestrator</title>
-  
+
   <!-- Typography: Newsreader (Editorial Apple-like Serif) + Plus Jakarta Sans (Clean Modern Sans) + JetBrains Mono (Technical Details) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <style>
     /* ── Editorial Warm Light Palette ────────────────────────────────── */
     :root {
-      --bg: #faf7f2;               /* warm cream / parchment paper */
-      --bg-subtle: #f4eee5;        /* soft sand container */
-      --surface: #ffffff;          /* crisp card canvas */
+      --bg: #faf7f2;
+      /* warm cream / parchment paper */
+      --bg-subtle: #f4eee5;
+      /* soft sand container */
+      --surface: #ffffff;
+      /* crisp card canvas */
       --surface-elevated: #ffffff;
       --border: rgba(44, 38, 30, 0.09);
       --border-hover: rgba(44, 38, 30, 0.18);
       --border-active: rgba(44, 38, 30, 0.35);
-      
-      --text: #1f1d1a;             /* deep warm espresso */
-      --text-muted: #6b645b;       /* soft warm taupe */
-      --text-faint: #9c9489;       /* light stone */
-      
-      --accent: #1f1d1a;           /* stark contrast black-brown */
-      --accent-warm: #8c5b36;      /* terracotta / cognac accent */
+
+      --text: #1f1d1a;
+      /* deep warm espresso */
+      --text-muted: #6b645b;
+      /* soft warm taupe */
+      --text-faint: #9c9489;
+      /* light stone */
+
+      --accent: #1f1d1a;
+      /* stark contrast black-brown */
+      --accent-warm: #8c5b36;
+      /* terracotta / cognac accent */
       --accent-warm-soft: #f8efe6;
-      
+
       --badge-spacy: #0284c7;
       --badge-spacy-bg: #e0f2fe;
       --badge-nltk: #b45309;
       --badge-nltk-bg: #fef3c7;
       --badge-gemini: #6d28d9;
       --badge-gemini-bg: #ede9fe;
-      
+
       --success: #15803d;
       --success-bg: #f0fdf4;
       --danger: #b91c1c;
       --danger-bg: #fef2f2;
-      
+
       --radius-sm: 6px;
       --radius-md: 10px;
       --radius-lg: 16px;
-      
+
       --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
       --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --font-mono: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: var(--font-sans);
@@ -66,13 +83,29 @@
 
     /* ── Subtle Entrance Animations ──────────────────────────────────── */
     @keyframes fadeInSlideUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @keyframes pulseSoft {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.15); opacity: 1; }
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+
+      50% {
+        transform: scale(1.15);
+        opacity: 1;
+      }
     }
 
     .animate-in {
@@ -173,6 +206,7 @@
       box-shadow: 0 1px 2px rgba(44, 38, 30, 0.03);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .git-link:hover {
       border-color: var(--border-hover);
       transform: translateY(-1px);
@@ -401,9 +435,20 @@
       color: #ffffff;
     }
 
-    .tag-spacy { background: var(--badge-spacy-bg); color: var(--badge-spacy); }
-    .tag-nltk { background: var(--badge-nltk-bg); color: var(--badge-nltk); }
-    .tag-gemini { background: var(--badge-gemini-bg); color: var(--badge-gemini); }
+    .tag-spacy {
+      background: var(--badge-spacy-bg);
+      color: var(--badge-spacy);
+    }
+
+    .tag-nltk {
+      background: var(--badge-nltk-bg);
+      color: var(--badge-nltk);
+    }
+
+    .tag-gemini {
+      background: var(--badge-gemini-bg);
+      color: var(--badge-gemini);
+    }
 
     /* ── Sub-controls (N-grams) ──────────────────────────────────────── */
     .sub-controls {
@@ -438,6 +483,7 @@
       cursor: pointer;
       transition: border-color 0.15s ease;
     }
+
     select:focus {
       border-color: var(--border-active);
     }
@@ -505,6 +551,7 @@
       cursor: pointer;
       transition: color 0.15s ease;
     }
+
     .clear-btn:hover {
       color: var(--danger);
     }
@@ -555,6 +602,7 @@
       padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border);
     }
+
     .sec-header:first-child {
       margin-top: 0;
     }
@@ -591,6 +639,7 @@
       padding: 0.85rem 1rem;
       transition: all 0.2s ease;
     }
+
     .stat-tile:hover {
       background: #ffffff;
       border-color: var(--border-hover);
@@ -655,6 +704,7 @@
       border-radius: var(--radius-sm);
       transition: all 0.15s ease;
     }
+
     .token-chip:hover {
       background: #ffffff;
       border-color: var(--border-active);
@@ -694,12 +744,41 @@
       opacity: 0.85;
     }
 
-    .ent-PERSON    { background: #e0f2fe; border-color: #bae6fd; color: #0369a1; }
-    .ent-ORG       { background: #ede9fe; border-color: #ddd6fe; color: #6d28d9; }
-    .ent-GPE       { background: #fef3c7; border-color: #fde68a; color: #b45309; }
-    .ent-DATE      { background: #f8efe6; border-color: #eedcc9; color: var(--accent-warm); }
-    .ent-PRODUCT   { background: #fce7f3; border-color: #fbcfe8; color: #be185d; }
-    .ent-default   { background: var(--bg); border-color: var(--border); color: var(--text-muted); }
+    .ent-PERSON {
+      background: #e0f2fe;
+      border-color: #bae6fd;
+      color: #0369a1;
+    }
+
+    .ent-ORG {
+      background: #ede9fe;
+      border-color: #ddd6fe;
+      color: #6d28d9;
+    }
+
+    .ent-GPE {
+      background: #fef3c7;
+      border-color: #fde68a;
+      color: #b45309;
+    }
+
+    .ent-DATE {
+      background: #f8efe6;
+      border-color: #eedcc9;
+      color: var(--accent-warm);
+    }
+
+    .ent-PRODUCT {
+      background: #fce7f3;
+      border-color: #fbcfe8;
+      color: #be185d;
+    }
+
+    .ent-default {
+      background: var(--bg);
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
 
     /* Tables */
     .table-container {
@@ -801,9 +880,17 @@
       letter-spacing: 0.04em;
     }
 
-    .sent-positive { color: var(--success); }
-    .sent-negative { color: var(--danger); }
-    .sent-neutral  { color: var(--text-muted); }
+    .sent-positive {
+      color: var(--success);
+    }
+
+    .sent-negative {
+      color: var(--danger);
+    }
+
+    .sent-neutral {
+      color: var(--text-muted);
+    }
 
     .sent-meter-wrap {
       flex: 1;
@@ -822,7 +909,7 @@
       border-radius: 50%;
       background: var(--text);
       border: 2px solid #ffffff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     /* Dependency SVG Container */
@@ -833,6 +920,7 @@
       padding: 1.25rem;
       overflow-x: auto;
     }
+
     #dep-svg-wrap svg {
       width: 100% !important;
       height: auto !important;
@@ -845,8 +933,11 @@
       gap: 1.15rem;
       margin-bottom: 1.25rem;
     }
+
     @media(max-width: 720px) {
-      .grid-duo { grid-template-columns: 1fr; }
+      .grid-duo {
+        grid-template-columns: 1fr;
+      }
     }
 
     .sub-box {
@@ -867,252 +958,250 @@
     }
   </style>
 </head>
+
 <body>
 
-<header>
-  <div class="brand">
-    <span class="brand-mark">SyntaxLab</span>
-    <div>
-      <span class="brand-title">Linguistic Orchestrator</span>
-      <span class="brand-subtitle">/ Hybrid NLP</span>
-    </div>
-  </div>
-  <div class="nav-meta">
-    <div class="status-pill">
-      <span class="status-dot"></span>
-      <span id="device-text">Runtime: Connecting…</span>
-    </div>
-    <a href="https://github.com/SiddharthaAryan-2003/NLP_analyzer" target="_blank" class="git-link">Repository ↗</a>
-  </div>
-</header>
-
-<main>
-
-  <div class="hero">
-    <div class="hero-eyebrow">Natural Language Processing Curriculum Suite</div>
-    <h1 class="hero-headline">Computational Syntax &amp; <em>Semantic Reasoning</em></h1>
-    <p class="hero-description">
-      Deterministic structural parsing (segmentation, Penn Treebank POS tagsets, Lidstone-smoothed N-grams, dependency grammars) running locally on your hardware, orchestrated with Google Gemini for discourse understanding.
-    </p>
-  </div>
-
-  <!-- Input Panel -->
-  <div class="panel">
-    <div class="panel-header">
-      <span class="panel-label">Input Corpus</span>
-      <span class="char-indicator"><span id="char-count">0</span> / 3000 chars</span>
-    </div>
-
-    <div class="editor-wrapper">
-      <textarea id="text-input" placeholder="Type or paste arbitrary English text to begin inspection…"></textarea>
-    </div>
-
-    <div class="editor-footer">
-      <div class="preset-pills">
-        <span class="preset-label">Test presets:</span>
-        <button class="preset-btn" data-preset="tech">Named Entities</button>
-        <button class="preset-btn" data-preset="grammar">Spelling &amp; Normalization</button>
-        <button class="preset-btn" data-preset="syntax">Syntax &amp; Dependencies</button>
+  <header>
+    <div class="brand">
+      <div>
+        <span class="brand-title">Linguistic Orchestrator</span>
       </div>
-      <button class="clear-btn" id="clear-btn">Clear text</button>
     </div>
-  </div>
+    <div class="nav-meta">
+      <a href="https://github.com/SiddharthaAryan-2003/NLP_analyzer" target="_blank" class="git-link">Repository ↗</a>
+    </div>
+  </header>
 
-  <!-- Task Selector & Controls -->
-  <div class="controls-panel">
-    <div class="tabs-bar">
-      <button class="tab-btn active" data-task="analyze">
-        Full Analysis <span class="tag-badge tag-gemini">Hybrid</span>
-      </button>
-      <button class="tab-btn" data-task="tokenize">
-        Tokenize <span class="tag-badge tag-spacy">spaCy</span>
-      </button>
-      <button class="tab-btn" data-task="pos">
-        POS Tags <span class="tag-badge tag-spacy">spaCy</span>
-      </button>
-      <button class="tab-btn" data-task="ner">
-        Entities <span class="tag-badge tag-spacy">spaCy</span>
-      </button>
-      <button class="tab-btn" data-task="dependency">
-        Dependency Tree <span class="tag-badge tag-spacy">spaCy</span>
-      </button>
-      <button class="tab-btn" data-task="ngrams">
-        N-Grams <span class="tag-badge tag-nltk">NLTK</span>
-      </button>
-      <button class="tab-btn" data-task="spellcheck">
-        Spell Check <span class="tag-badge tag-gemini">Gemini</span>
-      </button>
-      <button class="tab-btn" data-task="normalize">
-        Normalize <span class="tag-badge tag-gemini">Gemini</span>
-      </button>
+  <main>
+
+    <div class="hero">
+
+      <h1 class="hero-headline">Computational Syntax &amp; <em>Semantic Reasoning</em></h1>
+      <p class="hero-description">
+        Deterministic structural parsing (segmentation, Penn Treebank POS tagsets, Lidstone-smoothed N-grams, dependency
+        grammars) running locally on your hardware, orchestrated with Google Gemini for discourse understanding.
+      </p>
     </div>
 
-    <!-- N-gram controls -->
-    <div id="ngram-controls" style="display: none;">
-      <div class="sub-controls">
-        <div class="control-item">
-          <label for="ngram-n">Order (N):</label>
-          <select id="ngram-n">
-            <option value="1">1 (Unigrams)</option>
-            <option value="2" selected>2 (Bigrams)</option>
-            <option value="3">3 (Trigrams)</option>
-            <option value="4">4 (4-grams)</option>
-            <option value="5">5 (5-grams)</option>
-          </select>
+    <!-- Input Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-label">Input Corpus</span>
+        <span class="char-indicator"><span id="char-count">0</span> / 3000 chars</span>
+      </div>
+
+      <div class="editor-wrapper">
+        <textarea id="text-input" placeholder="Type or paste arbitrary English text to begin inspection…"></textarea>
+      </div>
+
+      <div class="editor-footer">
+        <div class="preset-pills">
+          <span class="preset-label">Test presets:</span>
+          <button class="preset-btn" data-preset="tech">Named Entities</button>
+          <button class="preset-btn" data-preset="grammar">Spelling &amp; Normalization</button>
+          <button class="preset-btn" data-preset="syntax">Syntax &amp; Dependencies</button>
         </div>
-        <div class="control-item">
-          <label>Lidstone α: <span id="alpha-display" style="font-family: var(--font-mono); color: var(--text); font-weight: 600;">0.50</span></label>
-          <input type="range" id="alpha-slider" min="0.01" max="1.0" step="0.01" value="0.5" style="width: 140px;">
-        </div>
+        <button class="clear-btn" id="clear-btn">Clear text</button>
       </div>
     </div>
 
-    <div class="action-row">
-      <button id="run-btn" class="run-btn">
-        <span>Execute Analysis</span>
-        <span class="run-shortcut">Ctrl ↵</span>
-      </button>
+    <!-- Task Selector & Controls -->
+    <div class="controls-panel">
+      <div class="tabs-bar">
+        <button class="tab-btn active" data-task="analyze">
+          Full Analysis <span class="tag-badge tag-gemini">Hybrid</span>
+        </button>
+        <button class="tab-btn" data-task="tokenize">
+          Tokenize <span class="tag-badge tag-spacy">spaCy</span>
+        </button>
+        <button class="tab-btn" data-task="pos">
+          POS Tags <span class="tag-badge tag-spacy">spaCy</span>
+        </button>
+        <button class="tab-btn" data-task="ner">
+          Entities <span class="tag-badge tag-spacy">spaCy</span>
+        </button>
+        <button class="tab-btn" data-task="dependency">
+          Dependency Tree <span class="tag-badge tag-spacy">spaCy</span>
+        </button>
+        <button class="tab-btn" data-task="ngrams">
+          N-Grams <span class="tag-badge tag-nltk">NLTK</span>
+        </button>
+        <button class="tab-btn" data-task="spellcheck">
+          Spell Check <span class="tag-badge tag-gemini">Gemini</span>
+        </button>
+        <button class="tab-btn" data-task="normalize">
+          Normalize <span class="tag-badge tag-gemini">Gemini</span>
+        </button>
+      </div>
+
+      <!-- N-gram controls -->
+      <div id="ngram-controls" style="display: none;">
+        <div class="sub-controls">
+          <div class="control-item">
+            <label for="ngram-n">Order (N):</label>
+            <select id="ngram-n">
+              <option value="1">1 (Unigrams)</option>
+              <option value="2" selected>2 (Bigrams)</option>
+              <option value="3">3 (Trigrams)</option>
+              <option value="4">4 (4-grams)</option>
+              <option value="5">5 (5-grams)</option>
+            </select>
+          </div>
+          <div class="control-item">
+            <label>Lidstone α: <span id="alpha-display"
+                style="font-family: var(--font-mono); color: var(--text); font-weight: 600;">0.50</span></label>
+            <input type="range" id="alpha-slider" min="0.01" max="1.0" step="0.01" value="0.5" style="width: 140px;">
+          </div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button id="run-btn" class="run-btn">
+          <span>Execute Analysis</span>
+          <span class="run-shortcut">Ctrl ↵</span>
+        </button>
+      </div>
     </div>
-  </div>
 
-  <!-- Loading State -->
-  <div id="loader">
-    <span class="loading-pulse"></span>
-    <span id="loader-text">Evaluating linguistic model…</span>
-  </div>
+    <!-- Loading State -->
+    <div id="loader">
+      <span class="loading-pulse"></span>
+      <span id="loader-text">Evaluating linguistic model…</span>
+    </div>
 
-  <!-- Error Alert -->
-  <div id="error-box"></div>
+    <!-- Error Alert -->
+    <div id="error-box"></div>
 
-  <!-- Results Viewport -->
-  <div id="results" class="panel animate-in">
-    <div id="results-content"></div>
-  </div>
+    <!-- Results Viewport -->
+    <div id="results" class="panel animate-in">
+      <div id="results-content"></div>
+    </div>
 
-</main>
+  </main>
 
-<footer>
-  SyntaxLab · Hybrid Architecture with spaCy (Local POS/NER/Syntax), NLTK (Smoothed N-Grams) &amp; Google Gemini (LLM API)
-</footer>
+  <footer>
+    SyntaxLab · Hybrid Architecture with spaCy (Local POS/NER/Syntax), NLTK (Smoothed N-Grams) &amp; Google Gemini (LLM
+    API)
+  </footer>
 
-<script>
-// ── Preset Library ──────────────────────────────────────────────────────────
-const PRESETS = {
-  tech: "Satya Nadella announced Microsoft's partnership with OpenAI in San Francisco on January 23, 2024. The initiative promises advancements in linguistic modeling and AI reasoning.",
-  grammar: "The students dont understnd the corect pronounciation of technical wrods. They're gonna submit the assignment ASAP cause it's due tomorrow.",
-  syntax: "Natural language processing enables intelligent computers to understand complex human speech and written communication effectively."
-};
+  <script>
+    // ── Preset Library ──────────────────────────────────────────────────────────
+    const PRESETS = {
+      tech: "Satya Nadella announced Microsoft's partnership with OpenAI in San Francisco on January 23, 2024. The initiative promises advancements in linguistic modeling and AI reasoning.",
+      grammar: "The students dont understnd the corect pronounciation of technical wrods. They're gonna submit the assignment ASAP cause it's due tomorrow.",
+      syntax: "Natural language processing enables intelligent computers to understand complex human speech and written communication effectively."
+    };
 
-document.querySelectorAll(".preset-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const textInput = document.getElementById("text-input");
-    textInput.value = PRESETS[btn.dataset.preset] || "";
-    document.getElementById("char-count").textContent = textInput.value.length;
-    textInput.focus();
-  });
-});
-
-document.getElementById("clear-btn").addEventListener("click", () => {
-  const textInput = document.getElementById("text-input");
-  textInput.value = "";
-  document.getElementById("char-count").textContent = "0";
-  hide(["results", "error-box"]);
-});
-
-// ── Device Detection ────────────────────────────────────────────────────────
-fetch("/api/device").then(r => r.json()).then(d => {
-  const el = document.getElementById("device-text");
-  el.textContent = d.cuda_available
-    ? `CUDA GPU (${d.device}) · ${d.spacy_model}`
-    : `CPU Local · ${d.spacy_model}`;
-}).catch(() => {
-  document.getElementById("device-text").textContent = "Runtime ready";
-});
-
-// ── Character Counting ──────────────────────────────────────────────────────
-const textInput = document.getElementById("text-input");
-textInput.addEventListener("input", () => {
-  document.getElementById("char-count").textContent = textInput.value.length;
-});
-
-// ── Alpha Slider ────────────────────────────────────────────────────────────
-document.getElementById("alpha-slider").addEventListener("input", e => {
-  document.getElementById("alpha-display").textContent = parseFloat(e.target.value).toFixed(2);
-});
-
-// ── Tab Management ──────────────────────────────────────────────────────────
-let currentTask = "analyze";
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentTask = btn.dataset.task;
-    document.getElementById("ngram-controls").style.display =
-      currentTask === "ngrams" ? "block" : "none";
-    hide(["results", "error-box"]);
-  });
-});
-
-// ── Keyboard Shortcut: Ctrl/Cmd + Enter ─────────────────────────────────────
-document.addEventListener("keydown", (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-    document.getElementById("run-btn").click();
-  }
-});
-
-// ── Execution Dispatcher ────────────────────────────────────────────────────
-document.getElementById("run-btn").addEventListener("click", async () => {
-  const text = textInput.value.trim();
-  if (!text) {
-    showError("Please enter some input text or choose a preset above.");
-    return;
-  }
-
-  setLoading(true, currentTask);
-  hide(["results", "error-box"]);
-
-  const body = { text };
-  if (currentTask === "ngrams") {
-    body.n = parseInt(document.getElementById("ngram-n").value);
-    body.alpha = parseFloat(document.getElementById("alpha-slider").value);
-  }
-
-  try {
-    const res = await fetch(`/api/${currentTask}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+    document.querySelectorAll(".preset-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const textInput = document.getElementById("text-input");
+        textInput.value = PRESETS[btn.dataset.preset] || "";
+        document.getElementById("char-count").textContent = textInput.value.length;
+        textInput.focus();
+      });
     });
-    const data = await res.json();
-    if (!res.ok || data.error) throw new Error(data.error || "Server processing error");
-    renderResults(currentTask, data);
-  } catch (err) {
-    showError(err.message);
-  } finally {
-    setLoading(false);
-  }
-});
 
-function renderResults(task, data) {
-  const renderers = {
-    analyze: renderFullAnalysis,
-    tokenize: renderTokenize,
-    pos: renderPOS,
-    ner: renderNER,
-    dependency: renderDependency,
-    ngrams: renderNgrams,
-    spellcheck: renderSpellCheck,
-    normalize: renderNormalize,
-  };
-  document.getElementById("results-content").innerHTML =
-    (renderers[task] || (() => "<p>Unknown analysis response format.</p>"))(data);
-  show("results");
-}
+    document.getElementById("clear-btn").addEventListener("click", () => {
+      const textInput = document.getElementById("text-input");
+      textInput.value = "";
+      document.getElementById("char-count").textContent = "0";
+      hide(["results", "error-box"]);
+    });
 
-// ── Specialized Renderers ───────────────────────────────────────────────────
+    // ── Device Detection ────────────────────────────────────────────────────────
+    fetch("/api/device").then(r => r.json()).then(d => {
+      const el = document.getElementById("device-text");
+      el.textContent = d.cuda_available
+        ? `CUDA GPU (${d.device}) · ${d.spacy_model}`
+        : `CPU Local · ${d.spacy_model}`;
+    }).catch(() => {
+      document.getElementById("device-text").textContent = "Runtime ready";
+    });
 
-function renderTokenize(d) {
-  return `
+    // ── Character Counting ──────────────────────────────────────────────────────
+    const textInput = document.getElementById("text-input");
+    textInput.addEventListener("input", () => {
+      document.getElementById("char-count").textContent = textInput.value.length;
+    });
+
+    // ── Alpha Slider ────────────────────────────────────────────────────────────
+    document.getElementById("alpha-slider").addEventListener("input", e => {
+      document.getElementById("alpha-display").textContent = parseFloat(e.target.value).toFixed(2);
+    });
+
+    // ── Tab Management ──────────────────────────────────────────────────────────
+    let currentTask = "analyze";
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentTask = btn.dataset.task;
+        document.getElementById("ngram-controls").style.display =
+          currentTask === "ngrams" ? "block" : "none";
+        hide(["results", "error-box"]);
+      });
+    });
+
+    // ── Keyboard Shortcut: Ctrl/Cmd + Enter ─────────────────────────────────────
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        document.getElementById("run-btn").click();
+      }
+    });
+
+    // ── Execution Dispatcher ────────────────────────────────────────────────────
+    document.getElementById("run-btn").addEventListener("click", async () => {
+      const text = textInput.value.trim();
+      if (!text) {
+        showError("Please enter some input text or choose a preset above.");
+        return;
+      }
+
+      setLoading(true, currentTask);
+      hide(["results", "error-box"]);
+
+      const body = { text };
+      if (currentTask === "ngrams") {
+        body.n = parseInt(document.getElementById("ngram-n").value);
+        body.alpha = parseFloat(document.getElementById("alpha-slider").value);
+      }
+
+      try {
+        const res = await fetch(`/api/${currentTask}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || "Server processing error");
+        renderResults(currentTask, data);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    function renderResults(task, data) {
+      const renderers = {
+        analyze: renderFullAnalysis,
+        tokenize: renderTokenize,
+        pos: renderPOS,
+        ner: renderNER,
+        dependency: renderDependency,
+        ngrams: renderNgrams,
+        spellcheck: renderSpellCheck,
+        normalize: renderNormalize,
+      };
+      document.getElementById("results-content").innerHTML =
+        (renderers[task] || (() => "<p>Unknown analysis response format.</p>"))(data);
+      show("results");
+    }
+
+    // ── Specialized Renderers ───────────────────────────────────────────────────
+
+    function renderTokenize(d) {
+      return `
     <div class="sec-header">
       <span class="sec-title">Corpus Metrics</span>
       <span class="engine-pill">${esc(d.engine)}</span>
@@ -1130,7 +1219,7 @@ function renderTokenize(d) {
     <div style="margin-bottom: 1.25rem;">
       ${d.sentences.map((s, i) => `
         <div style="font-family: var(--font-serif); font-size: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
-          <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-warm); margin-right: 0.6rem;">[${i+1}]</span>${esc(s)}
+          <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-warm); margin-right: 0.6rem;">[${i + 1}]</span>${esc(s)}
         </div>
       `).join("")}
     </div>
@@ -1140,10 +1229,10 @@ function renderTokenize(d) {
       ${d.tokens.map(t => `<span class="token-chip">${esc(t)}</span>`).join("")}
     </div>
   `;
-}
+    }
 
-function renderPOS(d) {
-  const rows = d.tagged.map(t => `
+    function renderPOS(d) {
+      const rows = d.tagged.map(t => `
     <tr>
       <td style="font-family: var(--font-serif); font-size: 0.95rem; font-weight: 500;">${esc(t.token)}</td>
       <td><span class="pos-tag">${esc(t.pos)}</span></td>
@@ -1153,7 +1242,7 @@ function renderPOS(d) {
     </tr>
   `).join("");
 
-  return `
+      return `
     <div class="sec-header">
       <span class="sec-title">Penn Treebank Morphological Tags</span>
       <span class="engine-pill">${esc(d.engine)}</span>
@@ -1167,22 +1256,22 @@ function renderPOS(d) {
       </table>
     </div>
   `;
-}
+    }
 
-function renderNER(d) {
-  if (!d.entity_count) {
-    return `
+    function renderNER(d) {
+      if (!d.entity_count) {
+        return `
       <div class="sec-header"><span class="sec-title">Named Entity Classification</span></div>
       <p style="color: var(--text-muted); font-size: 0.9rem;">No real-world named entities recognized in the input sequence.</p>
     `;
-  }
+      }
 
-  const annotatedHtml = (d.annotated || []).map(seg => {
-    if (seg.type === "text") return esc(seg.text);
-    return `<span class="ent-chip ent-${seg.label}">${esc(seg.text)}<span class="ent-label">${esc(seg.label)}</span></span>`;
-  }).join("");
+      const annotatedHtml = (d.annotated || []).map(seg => {
+        if (seg.type === "text") return esc(seg.text);
+        return `<span class="ent-chip ent-${seg.label}">${esc(seg.text)}<span class="ent-label">${esc(seg.label)}</span></span>`;
+      }).join("");
 
-  const rows = d.entities.map(e => `
+      const rows = d.entities.map(e => `
     <tr>
       <td style="font-weight: 600; font-family: var(--font-serif); font-size: 0.96rem;">${esc(e.text)}</td>
       <td><span class="ent-chip ent-${e.label}">${esc(e.label)}</span></td>
@@ -1191,7 +1280,7 @@ function renderNER(d) {
     </tr>
   `).join("");
 
-  return `
+      return `
     <div class="sec-header">
       <span class="sec-title">Annotated Context</span>
       <span class="engine-pill">${esc(d.engine)}</span>
@@ -1206,10 +1295,10 @@ function renderNER(d) {
       </table>
     </div>
   `;
-}
+    }
 
-function renderDependency(d) {
-  const rows = d.dependencies.map(dep => `
+    function renderDependency(d) {
+      const rows = d.dependencies.map(dep => `
     <tr>
       <td style="font-family: var(--font-serif); font-size: 0.95rem; font-weight: 500;">${esc(dep.token)}</td>
       <td><span class="pos-tag">${esc(dep.dep)}</span></td>
@@ -1218,7 +1307,7 @@ function renderDependency(d) {
     </tr>
   `).join("");
 
-  return `
+      return `
     <div class="sec-header">
       <span class="sec-title">Syntactic Dependency Graph</span>
       <span class="engine-pill">${esc(d.engine)}</span>
@@ -1234,23 +1323,23 @@ function renderDependency(d) {
       </table>
     </div>
   `;
-}
+    }
 
-function renderNgrams(d) {
-  if (d.error) return `<p style="color: var(--danger); font-family: var(--font-mono);">Error: ${esc(d.error)}</p>`;
-  const max = d.top_10.length ? d.top_10[0].count : 1;
-  const bars = d.top_10.map(item => {
-    const pct = Math.round((item.count / max) * 100);
-    return `
+    function renderNgrams(d) {
+      if (d.error) return `<p style="color: var(--danger); font-family: var(--font-mono);">Error: ${esc(d.error)}</p>`;
+      const max = d.top_10.length ? d.top_10[0].count : 1;
+      const bars = d.top_10.map(item => {
+        const pct = Math.round((item.count / max) * 100);
+        return `
       <div class="ngram-metric-row">
         <span class="ngram-term">${esc(item.ngram)}</span>
         <div class="ngram-track"><div class="ngram-fill" style="width: ${pct}%"></div></div>
         <span class="ngram-count-tag">${item.count}× <span style="color: var(--text-faint);">(p=${item.smoothed_prob})</span></span>
       </div>
     `;
-  }).join("");
+      }).join("");
 
-  return `
+      return `
     <div class="sec-header">
       <span class="sec-title">Statistical Language Model</span>
       <span class="engine-pill">NLTK · Lidstone Smoothing</span>
@@ -1270,11 +1359,11 @@ function renderNgrams(d) {
       ${d.ngrams.map(g => `<span class="token-chip">${esc(g)}</span>`).join("")}
     </div>
   `;
-}
+    }
 
-function renderSpellCheck(d) {
-  const rows = d.errors.length
-    ? d.errors.map(e => `
+    function renderSpellCheck(d) {
+      const rows = d.errors.length
+        ? d.errors.map(e => `
         <tr>
           <td><span style="font-family: var(--font-serif); font-size: 0.95rem; color: var(--danger); text-decoration: line-through;">${esc(e.original)}</span></td>
           <td><span style="font-family: var(--font-serif); font-size: 0.95rem; color: var(--success); font-weight: 600;">${esc(e.corrected)}</span></td>
@@ -1282,9 +1371,9 @@ function renderSpellCheck(d) {
           <td style="color: var(--text-muted); font-size: 0.8rem;">${esc(e.explanation)}</td>
         </tr>
       `).join("")
-    : `<tr><td colspan="4" style="color: var(--success); font-family: var(--font-mono); font-size: 0.85rem;">No orthographic or grammatical anomalies identified.</td></tr>`;
+        : `<tr><td colspan="4" style="color: var(--success); font-family: var(--font-mono); font-size: 0.85rem;">No orthographic or grammatical anomalies identified.</td></tr>`;
 
-  return `
+      return `
     <div class="sec-header">
       <span class="sec-title">Context-Aware Correction</span>
       <span class="engine-pill">Google Gemini</span>
@@ -1304,10 +1393,10 @@ function renderSpellCheck(d) {
       </table>
     </div>
   `;
-}
+    }
 
-function renderNormalize(d) {
-  const rows = d.changes.map(c => `
+    function renderNormalize(d) {
+      const rows = d.changes.map(c => `
     <tr>
       <td><span class="engine-pill">${esc(c.type)}</span></td>
       <td style="font-family: var(--font-serif); font-size: 0.95rem; color: var(--text-muted);">${esc(c.original)}</td>
@@ -1315,7 +1404,7 @@ function renderNormalize(d) {
     </tr>
   `).join("");
 
-  return `
+      return `
     <div class="sec-header">
       <span class="sec-title">Text Normalization &amp; Canonical Forms</span>
       <span class="engine-pill">Formality Index: ${d.formality_score} / 10</span>
@@ -1334,16 +1423,16 @@ function renderNormalize(d) {
       </div>
     ` : '<p style="color: var(--text-muted); font-size: 0.85rem;">No text alterations required; corpus is in canonical form.</p>'}
   `;
-}
+    }
 
-function renderFullAnalysis(d) {
-  const s = d.summary;
-  const sent = d.sentiment || {};
-  const sScore = ((sent.score || 0) + 1) / 2 * 100;
-  const sLabel = sent.label || "neutral";
+    function renderFullAnalysis(d) {
+      const s = d.summary;
+      const sent = d.sentiment || {};
+      const sScore = ((sent.score || 0) + 1) / 2 * 100;
+      const sLabel = sent.label || "neutral";
 
-  // POS Compact
-  const posRows = (d.pos_tags || []).slice(0, 30).map(t => `
+      // POS Compact
+      const posRows = (d.pos_tags || []).slice(0, 30).map(t => `
     <tr>
       <td style="font-family: var(--font-serif); font-size: 0.95rem;">${esc(t.token)}</td>
       <td><span class="pos-tag">${esc(t.pos)}</span></td>
@@ -1352,26 +1441,26 @@ function renderFullAnalysis(d) {
     </tr>
   `).join("");
 
-  // Bigrams
-  const maxB = d.bigrams.length ? d.bigrams[0].count : 1;
-  const bigramBars = d.bigrams.slice(0, 5).map(b => {
-    const pct = Math.round((b.count / maxB) * 100);
-    return `
+      // Bigrams
+      const maxB = d.bigrams.length ? d.bigrams[0].count : 1;
+      const bigramBars = d.bigrams.slice(0, 5).map(b => {
+        const pct = Math.round((b.count / maxB) * 100);
+        return `
       <div class="ngram-metric-row">
         <span class="ngram-term" style="font-size: 0.82rem;">${esc(b.ngram)}</span>
         <div class="ngram-track"><div class="ngram-fill" style="width: ${pct}%"></div></div>
         <span class="ngram-count-tag" style="font-size: 0.72rem;">${b.count}×</span>
       </div>
     `;
-  }).join("");
+      }).join("");
 
-  // Entities
-  const annotatedHtml = (d.annotated || []).map(seg => {
-    if (seg.type === "text") return esc(seg.text);
-    return `<span class="ent-chip ent-${seg.label}">${esc(seg.text)}<span class="ent-label">${esc(seg.label)}</span></span>`;
-  }).join("");
+      // Entities
+      const annotatedHtml = (d.annotated || []).map(seg => {
+        if (seg.type === "text") return esc(seg.text);
+        return `<span class="ent-chip ent-${seg.label}">${esc(seg.text)}<span class="ent-label">${esc(seg.label)}</span></span>`;
+      }).join("");
 
-  return `
+      return `
     <div class="sec-header">
       <span class="sec-title">Corpus Architecture</span>
       <span class="engine-pill">${esc(d.engines?.structural)} + ${esc(d.engines?.semantic)}</span>
@@ -1397,7 +1486,7 @@ function renderFullAnalysis(d) {
         <div class="sentiment-box">
           <span class="sentiment-badge sent-${sLabel}">${esc(sLabel)}</span>
           <div class="sent-meter-wrap"><div class="sent-meter-dot" style="left: ${sScore}%;"></div></div>
-          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-faint);">${(sent.score||0).toFixed(2)}</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-faint);">${(sent.score || 0).toFixed(2)}</span>
         </div>
         ${sent.reasoning ? `<p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">${esc(sent.reasoning)}</p>` : ""}
       </div>
@@ -1440,42 +1529,43 @@ function renderFullAnalysis(d) {
       <strong>${esc(d.normalized_text || d.summary_text || "—")}</strong>
     </div>
   `;
-}
+    }
 
-// ── Utility Helpers ─────────────────────────────────────────────────────────
-const LOADER_LABELS = {
-  analyze: "Computing hybrid pipeline (spaCy local + Gemini API)…",
-  tokenize: "Segmenting sentences & tokens via spaCy…",
-  pos: "Predicting Penn Treebank morphological tags…",
-  ner: "Classifying named entity spans via spaCy…",
-  dependency: "Evaluating syntactic dependency arcs…",
-  ngrams: "Calculating Lidstone-smoothed N-gram probabilities…",
-  spellcheck: "Executing context-aware spell correction via Gemini…",
-  normalize: "Expanding contractions and normalizing register…",
-};
+    // ── Utility Helpers ─────────────────────────────────────────────────────────
+    const LOADER_LABELS = {
+      analyze: "Computing hybrid pipeline (spaCy local + Gemini API)…",
+      tokenize: "Segmenting sentences & tokens via spaCy…",
+      pos: "Predicting Penn Treebank morphological tags…",
+      ner: "Classifying named entity spans via spaCy…",
+      dependency: "Evaluating syntactic dependency arcs…",
+      ngrams: "Calculating Lidstone-smoothed N-gram probabilities…",
+      spellcheck: "Executing context-aware spell correction via Gemini…",
+      normalize: "Expanding contractions and normalizing register…",
+    };
 
-function setLoading(on, task) {
-  document.getElementById("loader").style.display = on ? "block" : "none";
-  if (task) document.getElementById("loader-text").textContent = LOADER_LABELS[task] || "Executing…";
-  document.getElementById("run-btn").disabled = on;
-}
+    function setLoading(on, task) {
+      document.getElementById("loader").style.display = on ? "block" : "none";
+      if (task) document.getElementById("loader-text").textContent = LOADER_LABELS[task] || "Executing…";
+      document.getElementById("run-btn").disabled = on;
+    }
 
-function showError(msg) {
-  const el = document.getElementById("error-box");
-  el.textContent = "Error: " + msg;
-  el.style.display = "block";
-}
+    function showError(msg) {
+      const el = document.getElementById("error-box");
+      el.textContent = "Error: " + msg;
+      el.style.display = "block";
+    }
 
-function show(id) { document.getElementById(id).style.display = "block"; }
-function hide(ids) { ids.forEach(id => document.getElementById(id).style.display = "none"); }
+    function show(id) { document.getElementById(id).style.display = "block"; }
+    function hide(ids) { ids.forEach(id => document.getElementById(id).style.display = "none"); }
 
-function esc(str) {
-  return String(str ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-</script>
+    function esc(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+  </script>
 </body>
+
 </html>
