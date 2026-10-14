@@ -63,10 +63,20 @@ Browser
 
 ### 2. Set your API key
 
+Create or edit your `.env` file (copy from `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+And set your key inside `.env`:
+```ini
+GEMINI_API_KEY=your_actual_api_key_here
+```
+Or set the environment variable directly:
 ```powershell
 $env:GEMINI_API_KEY = "your-key-here"
 ```
-or edit `GEMINI_API_KEY` in `config.py`.
 
 ### 3. Install dependencies
 

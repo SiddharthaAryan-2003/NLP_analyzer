@@ -17,7 +17,7 @@ from google.genai import types
 from flask import Flask, request, jsonify, render_template
 
 from config import (
-    GEMINI_API_KEY, GEMINI_MODEL,
+    GEMINI_API_KEY, GEMINI_MODEL, FALLBACK_MODELS,
     HOST, PORT, DEBUG,
     MAX_INPUT_CHARS, DEFAULT_NGRAM_N, SMOOTHING_ALPHA,
 )
@@ -38,33 +38,46 @@ from nlp_local import (
 
 # ── App & Gemini setup ────────────────────────────────────────────────────────
 app = Flask(__name__)
-client = genai.Client(api_key=GEMINI_API_KEY)
+client = None
+if GEMINI_API_KEY and GEMINI_API_KEY != "YOUR_GEMINI_API_KEY_HERE":
+    try:
+        client = genai.Client(api_key=GEMINI_API_KEY)
+    except Exception:
+        client = None
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def call_gemini(prompt: str) -> dict:
-    """Send a prompt to Gemini and return parsed JSON."""
+    """Send a prompt to Gemini and return parsed JSON with automatic model fallback."""
+    global client
     if not GEMINI_API_KEY or GEMINI_API_KEY == "YOUR_GEMINI_API_KEY_HERE":
         raise ValueError(
-            "Gemini API key is not configured. Please set GEMINI_API_KEY in config.py "
-            "or set the environment variable $env:GEMINI_API_KEY. "
+            "Gemini API key is not configured. Please set GEMINI_API_KEY in your .env file. "
             "Get a free key at https://aistudio.google.com/app/apikey"
         )
-    try:
-        response = client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-            ),
-        )
-        raw = response.text.strip()
-        raw = re.sub(r"^```(?:json)?\s*", "", raw)
-        raw = re.sub(r"\s*```$",          "", raw)
-        return json.loads(raw)
-    except Exception as e:
-        raise RuntimeError(f"Gemini API call failed: {e}")
+    if client is None:
+        client = genai.Client(api_key=GEMINI_API_KEY)
+
+    last_err = None
+    for model_name in FALLBACK_MODELS:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=SYSTEM_PROMPT,
+                ),
+            )
+            raw = response.text.strip()
+            raw = re.sub(r"^```(?:json)?\s*", "", raw)
+            raw = re.sub(r"\s*```$",          "", raw)
+            return json.loads(raw)
+        except Exception as e:
+            last_err = e
+            continue
+
+    raise RuntimeError(f"Gemini API call failed across models {FALLBACK_MODELS}: {last_err}")
 
 
 def validate_input(text: str):
